@@ -46,7 +46,6 @@ pub struct Templates {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Configuration
 {
-    version: String,
     max_legendaries: i32,
     simcraft: Simcraft,
     templates: Templates,
@@ -60,7 +59,6 @@ pub const CONFIG_FILE: &str = "config.json";
 impl Configuration {
     pub fn new() -> Configuration {
         Configuration {
-            version: String::from("0.0.1"),
             max_legendaries: 2,
             simcraft: Simcraft {
                 executeable: String::from("simc.exe"),

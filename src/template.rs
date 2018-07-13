@@ -15,14 +15,14 @@ pub struct Template {
 }
 
 impl Template {
-    /*!
-     * Load a template from a file.
-     * 
-     * name:    Name of the template.
-     * file:    The location where the template is stored.
-     * 
-     * return:  Returns an std::result::Result with a Template instance.
-     */
+
+    /// Load a template from a file.
+    /// 
+    /// name:    Name of the template.
+    /// file:    The location where the template is stored.
+    /// 
+    /// return:  Returns an std::result::Result with a Template instance.
+    /// 
     pub fn load(name: &str, file: &str) -> Result<Template, Error> {
         match File::open(name) {
             Ok(mut fin) => {

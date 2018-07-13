@@ -7,7 +7,6 @@ extern crate clap;
 extern crate chrono;
 extern crate singleton;
 
-use std::fs::File;
 use clap::{Arg, App};
 
 mod template;
@@ -20,11 +19,15 @@ mod configuration;
 use configuration::*;
 
 
+const VERSION: &str = "0.0.1";
+const AUTHOR: &str = "[DM]Origin";
+
+
 fn main() {
     // read application arguments
     let arg_matches = App::new("SimPermut")
-        .version("0.0.1")
-        .author("[DM]Origin")
+        .version(VERSION)
+        .author(AUTHOR)
         .about("Generate a permutation of all items set by a simc file.")
         .arg(Arg::with_name("config")
             .short("c")
@@ -36,6 +39,9 @@ fn main() {
             .help("Set the simc file that stores all items that you want to permut.")
             .required(true)
             .index(1))
+        .arg(Arg::with_name("version")
+            .long("version")
+            .help("Print the version of this application."))
         .get_matches();
     
 
