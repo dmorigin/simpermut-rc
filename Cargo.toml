@@ -1,0 +1,11 @@
+[package]
+name = "SimPermut"
+version = "0.1.0"
+authors = ["dmorigin <stephan@kirfel-koeln.de>"]
+
+[dependencies]
+serde = "1.0.0"
+serde_derive = "1.0.0"
+serde_json = "1.0.0"
+regex = "1.0.0"
+clap = "2.32.0"

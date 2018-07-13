@@ -1,0 +1,52 @@
+
+{
+    "version": "0.0.1",
+    "max_legendaries": 2,
+
+    "simcraft": {
+        "executeable": "D:/Downloads/simc-735-02-win64/simc.exe",
+        "html": "output/parses/html/parse_{}.html",
+        "txt": "output/parses/txt/parse_{}.txt"
+    },
+
+    "templates": {
+        "configuration": "D:/Development/World of Warcraft/Simulations/global_conf_v1.simc",
+        "character": ""
+    },
+
+    "replaces": {
+        "items": [
+            {
+                "slot": "main_hand",
+                "id": "127829",
+                "gem_id": "137491/142192/152032",
+                "bonus_id": "719",
+                "relic_id": "3536:1597:3336/3536:1592:3337/3611:1487:3528",
+                "enchant_id": "0"
+            },
+            {
+                "slot": "off_hand",
+                "id": "127830",
+                "gem_id": "",
+                "bonus_id": "",
+                "relic_id": "",
+                "enchant_id": ""
+            }
+        ],
+
+        "enchantments": [
+            {
+                "slot": "finger1",
+                "id": "5427"
+            },
+            {
+                "slot": "finger2",
+                "id": "5427"
+            },
+            {
+                "slot": "back",
+                "id": "5435"
+            }
+        ]
+    }
+}
