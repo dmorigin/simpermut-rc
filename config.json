@@ -10,8 +10,8 @@
     },
 
     "templates": {
-        "configuration": "D:/Development/World of Warcraft/Simulations/global_conf_v1.simc",
-        "character": ""
+        "configuration": "templates/global_conf_v1.simc",
+        "character": "templates/dh.legion.simc"
     },
 
     "replaces": {

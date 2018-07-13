@@ -1,0 +1,61 @@
+# ***********************************************************
+#
+# Configuration
+#
+# ***********************************************************
+
+# Reports
+html="#[[output_html]]"
+txt="#[[output_txt]]"
+threads=4
+
+# General
+max_time=300
+vary_combat_length=0.2
+iterations=25000
+
+# Enemies (Patchwerk,LightMovement,HecticAddCleave)
+tmi_boss=T19M
+fight_style=LightMovement
+
+# Character
+optimal_raid=1
+
+# Scaling Factors
+#	to enable scale factors set calculate_scale_factors to 1
+calculate_scale_factors=1
+normalize_scale_factors=1
+scale_only=agility,haste,crit_rating,mastery,versatility,weapon_dps,weapon_offhand_dps
+
+
+# ***********************************************************
+#
+# Pantheon Proc Settings
+#
+# ***********************************************************
+# Only one other player with that trinket
+legion.pantheon_trinket_users=go
+
+# 10 Man Raid
+#legion.pantheon_trinket_users=go/kh/eo/no/ag/go/kh/eo/no/ag
+
+# 20 Man Raid
+#legion.pantheon_trinket_users=go/kh/eo/no/ag/go/kh/eo/no/ag/go/kh/eo/no/ag/go/kh/eo/no/ag
+
+
+# ***********************************************************
+#
+# Netherlight Crucible second row id's
+#
+# ***********************************************************
+#	Torment The Weak		crucible=1780
+#	Shadowbind				crucible=1778
+#	Chaotic Darkness		crucible=1779
+#	Dark Sorrows			crucible=1781
+#	Master of Shadows		crucible=1771
+#	Murderous Intent		crucible=1774
+#	Shocklight				crucible=1777
+#	Light Speed				crucible=1770
+#	Secure in the Light		crucible=1782
+#	Infusion of Light		crucible=1783
+#

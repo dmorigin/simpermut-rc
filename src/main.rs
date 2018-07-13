@@ -7,11 +7,55 @@ extern crate serde_json;
 
 extern crate regex;
 extern crate clap;
+extern crate chrono;
 
 use std::fs::File;
+use std::io::prelude::*;
 use std::io::{BufRead, BufReader};
 use regex::Regex;
 use clap::{Arg, App};
+
+
+struct ParseId {
+    id: String,
+    count: u64,
+}
+
+impl ParseId {
+    fn get<'a>() -> &'a mut ParseId {
+
+        unsafe {
+            static mut instance: *const ParseId = 0 as *const ParseId;
+            static mut once: bool = true;
+            
+            if once {
+                instance = std::mem::transmute(Box::new(ParseId{
+                    id: chrono::Utc::now().to_string(),
+                    count: 0u64
+                }));
+            }
+
+            &mut (*instance as ParseId)
+        }
+    }
+
+    fn context() -> String {
+        if ParseId::get().id.len() == 0 {
+            ParseId::get().id = format!("{}", 1234);
+        }
+
+        ParseId::get().id
+    }
+
+    fn count() -> u64 {
+        ParseId::get().count
+    }
+
+    fn next() -> u64 {
+        ParseId::get().count = ParseId::get().count + 1;
+        ParseId::get().count
+    }
+}
 
 
 #[derive(PartialEq, PartialOrd, Eq, Hash)]
@@ -36,10 +80,11 @@ enum Slot
 }
 
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 struct Item
 {
     id: String,
+    slot: String,
     name: String,
     bonus_id: String,
     gem_id: String,
@@ -110,6 +155,29 @@ struct Configuration
 }
 
 
+impl Configuration {
+    fn new() -> Configuration {
+        Configuration {
+            version: String::from("0.0.1"),
+            max_legendaries: 2,
+            simcraft: Simcraft {
+                executeable: String::from("simc.exe"),
+                html: String::from("output/html/simc_calculation_{}.html"),
+                txt: String::from("output/txt/simc_calculation_{}.txt")
+            },
+            templates: Templates {
+                configuration: String::from(""),
+                character: String::from("")
+            },
+            replaces: Replacement {
+                items: Vec::new() as Vec<ReplacedItem>,
+                enchantments: Vec::new() as Vec<ReplacedEnchantment>
+            }
+        }
+    }
+}
+
+
 const CONFIG_FILE: &str = "config.json";
 
 
@@ -133,23 +201,7 @@ fn main() {
     
 
     // read config file
-    let mut config = Configuration {
-        version: String::from("0.0.1"),
-        max_legendaries: 2,
-        simcraft: Simcraft {
-            executeable: String::from("simc.exe"),
-            html: String::from("output/html/simc_calculation_{}.html"),
-            txt: String::from("output/txt/simc_calculation_{}.txt")
-        },
-        templates: Templates {
-            configuration: String::from(""),
-            character: String::from("")
-        },
-        replaces: Replacement {
-            items: Vec::new() as Vec<ReplacedItem>,
-            enchantments: Vec::new() as Vec<ReplacedEnchantment>
-        }
-    };
+    let mut config = Configuration::new();
 
     let config_file = arg_matches.value_of("config").unwrap_or(CONFIG_FILE);
     match File::open(config_file) {
@@ -188,41 +240,78 @@ fn main() {
 
 
 fn permutation(config: &Configuration, items: &Vec<ItemMap>) {
-    let mut collection: Vec<String> = Vec::new();
+    let mut stack: Vec<Item> = Vec::new();
 
-    permut_iterations(&config.replaces, items, &mut collection, 0);
+    permut_iterations(&config, items, &mut stack, 0);
 }
 
 
 fn permut_iterations(
-    replacement: &Replacement,
+    config: &Configuration,
     items: &Vec<ItemMap>,
-    collection: &mut Vec<String>,
+    stack: &mut Vec<Item>,
     count: usize)
 {
     // End of array arrived
     if count >= items.len() {
+        // build up simc file
+        build_simc_file(config, stack);
         return;
     }
 
     let item_map = &items[count];
     
-    match replacement.items.iter().position(|&x| x == item_map.slot) {
-        Ok(_) => true,
-        Err(_) => false
-    }
-
     for iter in item_map.items.iter() {
-        // if count is zero, this is the first entrie. So we need to clear the collection
-        if count == 0 {
-            collection.clear();
-        }
-
         // add my own one
+        stack.push(iter.clone());
 
         // step into next iteration
-        permut_iterations(replacement, items, collection, count + 1);
+        permut_iterations(config, items, stack, count + 1);
+
+        // remove from stack
+        stack.pop();
     }
+}
+
+
+fn build_simc_file(config: &Configuration, stack: &Vec<Item>)
+{
+    // build the item list
+    let mut item_list: String = String::new();
+    for item in stack.iter() {
+        let mut entry: String = format!("{}=,id={}", item.slot, item.id);
+
+        if item.gem_id.len() > 0 {
+            entry.push_str(&format!(",gem_id={}", item.gem_id));
+        }
+
+        if item.relic_id.len() > 0 {
+            entry.push_str(&format!(",relic_id={}", item.relic_id));
+        }
+
+        if item.bonus_id.len() > 0 {
+            entry.push_str(&format!(",bonus_id={}", item.bonus_id));
+        }
+
+        if item.enchant_id.len() > 0 {
+            entry.push_str(&format!(",enchant_id={}", item.enchant_id));
+        }
+
+        item_list.push_str(&entry);
+        item_list.push('\n');
+    }
+
+    // setup config template
+    let mut tmpl_config = get_template(&config.templates.configuration).unwrap();
+
+    let output_html = config.simcraft.html.replace("{}", &ParseId::next().to_string());
+    let output_txt = config.simcraft.txt.replace("{}", &ParseId::count().to_string());
+
+    set_tmpl_var(&mut tmpl_config, "output_html", &output_html).unwrap();
+    set_tmpl_var(&mut tmpl_config, "output_txt", &output_txt).unwrap();
+
+    // setup character template
+    let mut tmpl_character = get_template(&config.templates.character).unwrap();
 }
 
 
@@ -232,7 +321,7 @@ fn parse_simc_file(stream : &File, items: &mut Vec<ItemMap>)
     let buffer = BufReader::new(stream);
 
     // step through alle lines
-    for (num, line) in buffer.lines().enumerate() {
+    for (_num, line) in buffer.lines().enumerate() {
         // search for something like this
         // [head|shoulder|...]=[string],id=123,...
         match line {
@@ -256,6 +345,7 @@ fn parse_simc_file(stream : &File, items: &mut Vec<ItemMap>)
 
                     // save name
                     item.name = String::from(&cap_item[2]);
+                    item.slot = slot_name(&slot).unwrap();
 
                     // extract id's
                     for cap_ids in regex_ids.captures_iter(&cap_item[3]) {
@@ -325,4 +415,55 @@ fn slot(name: &str) -> std::result::Result<Slot, std::io::Error> {
         "off_hand" => Ok(Slot::OffHand),
         _ => Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, String::from("Invalid slot name")))
     }
+}
+
+
+fn slot_name(slot: &Slot) -> std::result::Result<String, std::io::Error> {
+    match slot {
+        Slot::Head => Ok(String::from("head")),
+        Slot::Neck => Ok(String::from("neck")),
+        Slot::Shoulder => Ok(String::from("shoulder")),
+        Slot::Back => Ok(String::from("back")),
+        Slot::Chest => Ok(String::from("chest")),
+        Slot::Wrist => Ok(String::from("wrist")),
+        Slot::Waist => Ok(String::from("waist")),
+        Slot::Hands => Ok(String::from("hands")),
+        Slot::Feet => Ok(String::from("feet")),
+        Slot::Legs => Ok(String::from("legs")),
+        Slot::Finger1 => Ok(String::from("finger1")),
+        Slot::Finger2 => Ok(String::from("finger2")),
+        Slot::Trinket1 => Ok(String::from("trinket1")),
+        Slot::Trinket2 => Ok(String::from("trinket2")),
+        Slot::MainHand => Ok(String::from("main_hand")),
+        Slot::OffHand => Ok(String::from("off_hand")),
+    }
+}
+
+
+fn get_template(name: &str) -> std::result::Result<String, std::io::Error> {
+    match File::open(name) {
+        Ok(mut file) => {
+            let mut tmpl = String::new();
+            file.read_to_string(&mut tmpl).expect("Can't read the template content!");
+
+            Ok(tmpl)
+        },
+        Err(_) => { 
+            Err(std::io::Error::new(std::io::ErrorKind::NotFound, 
+                format!("Cannot open template {}", name)))
+        }
+    }
+}
+
+fn store_template(template: &str, name: &str) -> std::result::Result<String, std::io::Error> {
+    let time = chrono::prelude::Utc::now().to_string();
+
+    
+
+    Ok(String::new())
+}
+
+fn set_tmpl_var(tmpl: &mut String, var: &str, value: &str) -> std::result::Result<bool, std::io::Error> {
+    *tmpl = tmpl.replace(&format!("#[[{}]]", var), value);
+    Ok(true)
 }

@@ -1,65 +1,41 @@
-# Configuration
-input="D:\Development\World of Warcraft\Simulations\global_conf_v1.simc"
-
 # SimC Addon 1.8.9
 
-demonhunter="Reference"
+demonhunter="Matabei"
 level=110
 race=blood_elf
 region=eu
 server=alleria
 role=attack
-professions=herbalism=800/mining=793
+professions=herbalism=800/mining=796
 talents=3311333
 spec=havoc
-artifact=3:0:0:0:0:1330:1:1362:1:1016:1:1015:1:1014:1:1013:1:1493:4:1494:1:1495:1:1496:29:1012:1:1011:1:1010:1:1008:4:1007:4:1006:4:1005:4:1004:4:1630:1:1003:4:1002:4:1001:4:1000:4
-crucible=1739:1770:1001/1739:1782:1006/1739:1778:1001
+artifact=3:0:0:0:0:1330:1:1362:1:1016:1:1015:1:1014:1:1013:1:1493:4:1494:1:1495:1:1496:93:1012:1:1011:1:1010:1:1008:4:1007:4:1006:4:1005:4:1004:4:1630:1:1003:4:1002:4:1001:4:1000:4
+crucible=1739:1775:1001/1739:1782:1006/1739:1778:1001
 
 head=,id=137061,bonus_id=3529/1811/3630
-neck=,id=134491,enchant_id=5437,gem_id=151580,bonus_id=3573/1808/1592/3337
-shoulder=,id=151988,gem_id=151580,bonus_id=3611/1808/1487/3528
-back=,id=152119,enchant_id=5435,bonus_id=3611/1487/3528
-chest=,id=152118,bonus_id=3611/1487/3528
-wrist=,id=147042,bonus_id=3562/1527/3337
-hands=,id=152120,bonus_id=3611/1492/3336
+neck=,id=152283,enchant_id=5437,bonus_id=3611/1492/3336
+shoulder=,id=151988,bonus_id=3612/1517/3337
+back=,id=152119,enchant_id=5310,gem_id=151580,bonus_id=3611/1808/1492/3336
+chest=,id=152118,bonus_id=3611/1497/3336
+wrist=,id=137512,bonus_id=3536/1617/3337
+hands=,id=152120,enchant_id=5444,bonus_id=3611/1492/3336
 waist=,id=151990,bonus_id=3611/40/1492/3336
 legs=,id=152122,bonus_id=3611/41/1487/3528
-feet=,id=137397,bonus_id=3536/1592/3528
+feet=,id=137324,bonus_id=3536/1612/3337
 finger1=,id=137038,enchant_id=5427,gem_id=151580,bonus_id=3529/1811/3630
-finger2=,id=152064,enchant_id=5427,bonus_id=3610/1472/3528
-trinket1=,id=154174,bonus_id=3984/3993
-trinket2=,id=151964,bonus_id=3611/1487/3528
-main_hand=,id=127829,gem_id=137491/142192/152032,bonus_id=719,relic_id=3536:1597:3336/3536:1592:3337/3611:1487:3528
-off_hand=,id=127830
-
-
-copy="Ring des Folterers","Reference"
-# Ring des fanatischen Folterers (950)
 finger2=,id=152284,enchant_id=5427,bonus_id=3611/1492/3336
-
-
-copy="Schreckensbalggurt+Flammenjongleurs","Reference"
-# Armbinden des Flammenjongleurs (965)
-wrist=,id=137512,bonus_id=3536/1617/3337
-# Schreckensbalggurt (940)
-waist=,id=121299,bonus_id=3536/42/1602/3528
-
-
-#copy="","Reference"
-
-
-
+trinket1=,id=154174,bonus_id=3984/3997
+trinket2=,id=151964,bonus_id=3611/1492/3336
+main_hand=,id=127829,gem_id=155848/142192/155848,bonus_id=719,relic_id=3611:1502:3336/3536:1592:3337/3611:1507:3336
+off_hand=,id=127830
 
 ### Gear from Bags
 #
-# Leerenzerfetzte Kapuze (935)
-# head=,id=151336,bonus_id=3418/1587/3337
-#
-# Gesichtsschutz des Dämonenbanns (920)
-# head=,id=147130,gem_id=151580,bonus_id=3562/1808/1502/3336
+# Gelaugte Ledergugel (955)
+# head=,id=134240,bonus_id=3536/1617/3337
 #
 # Prydaz, Xavarics Magnum Opus (1000)
-# neck=,id=132444,enchant_id=5437,gem_id=151584,bonus_id=1811/3630
+# neck=,id=132444,enchant_id=5437,bonus_id=1811/3630
 #
 # Größenwahn (1000)
 # shoulder=,id=144279,enchant_id=5883,bonus_id=3459/3630
@@ -70,65 +46,47 @@ waist=,id=121299,bonus_id=3536/42/1602/3528
 # Umhang der Teufelsflammen (1000)
 # back=,id=137066,bonus_id=1811/3630
 #
-# Weinbefleckter Mantel (940)
-# back=,id=142215,enchant_id=5435,bonus_id=3535/1552/3336
+# Umhang aus managewebter Seide (960)
+# back=,id=134410,enchant_id=5435,bonus_id=3536/1612/3337
 #
-# Weste der splitternden Diamanten (940)
-# chest=,id=137336,bonus_id=3418/1592/3337
+# Teufelsfledermauslederweste (960)
+# chest=,id=134373,bonus_id=3536/1622/3337
 #
-# Handgelenksschützer der Schwertsängerin (930)
-# wrist=,id=134280,bonus_id=3535/1592/3337
-#
-# Armbinden des Flammenjongleurs (965)
-# wrist=,id=137512,bonus_id=3536/1617/3337
+# Schwergewichtsgelenkbänder der Mo'arg (965)
+# wrist=,id=144485,bonus_id=3536/1617/3337
 #
 # Geist der Finsterflamme (1000)
 # hands=,id=144292,bonus_id=1811/3630
 #
-# Stulpen des Dämonenbanns (925)
-# hands=,id=147129,enchant_id=5444,gem_id=151580,bonus_id=3562/1808/1507/3336
-#
-# Handschützer des hinterhältigen Eindringlings (935)
-# hands=,id=137480,gem_id=151580,bonus_id=3418/1808/1587/3337
-#
-# Cinidaria der Symbiont (1000)
-# waist=,id=133976,bonus_id=3459/3630
+# Grausamer Zwingenhandschutz (965)
+# hands=,id=133617,bonus_id=3536/1617/3337
 #
 # Schreckensbalggurt (940)
 # waist=,id=121299,bonus_id=3536/42/1602/3528
 #
+# Cinidaria der Symbiont (1000)
+# waist=,id=133976,bonus_id=3459/3630
+#
 # Umarmung des Vergessens (1000)
 # legs=,id=151799,bonus_id=3459/3630
-#
-# Beinschützer des ätzenden Titanenhasses (945)
-# legs=,id=152282,bonus_id=3611/40/1487/3528
 #
 # Das Opfer von Loramus Thalipedes (1000)
 # feet=,id=137022,bonus_id=3459/3630
 #
-# Fußpolster des schändlichen Maschinisten (945)
-# feet=,id=152412,bonus_id=3611/1487/3528
-#
-# Geflochtener Silberring (945)
-# finger1=,id=134539,bonus_id=3536/1597/3336
+# Ring der Teufelsbeherrschung (965)
+# finger1=,id=144481,enchant_id=5429,bonus_id=3536/1617/3337
 #
 # Schleife der gehässigen Motive (960)
-# finger1=,id=134530,enchant_id=5430,bonus_id=3536/41/1612/3337
+# finger1=,id=134530,enchant_id=5429,bonus_id=3536/41/1612/3337
 #
-# Ring des fanatischen Folterers (950)
-# finger1=,id=152284,enchant_id=5427,bonus_id=3611/1492/3336
-#
-# Höllenasche (930)
-# trinket1=,id=147009,bonus_id=3562/1512/3337
-#
-# Umbralmondgleven (915)
-# trinket1=,id=147012,bonus_id=3562/40/1497/3528
+# Kil'jaedens brennender Wunsch (1000)
+# trinket1=,id=144259,bonus_id=3459/3630
 #
 # Alptraumeierschale (970)
 # trinket1=,id=137312,bonus_id=3536/1622/3337
 #
-# Kil'jaedens brennender Wunsch (1000)
-# trinket1=,id=144259,bonus_id=3459/3630
+# Aggramars Überzeugung (1000)
+# trinket1=,id=154173,bonus_id=3984/3997
 #
 # Spitzhacke (4)
 # main_hand=,id=2901
