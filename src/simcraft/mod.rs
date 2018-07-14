@@ -20,8 +20,7 @@ use template::Template;
 pub struct Simcraft {
     config: Configuration,
     items: ItemMap,
-    template: Template,
-    parse_counter: u64
+    template: Template
 }
 
 impl Simcraft {
@@ -29,8 +28,7 @@ impl Simcraft {
         Simcraft {
             config: (*config).clone(),
             items: ItemMap::new(),
-            template: Template::default(),
-            parse_counter: 0u64
+            template: Template::default()
         }
     }
 
@@ -54,18 +52,19 @@ impl Simcraft {
         // generate template
         self.template = Template::load("basic", &self.config.template).unwrap();
 
-        self.permut_iterations(&mut stack, 0);
+        self.permut_iterations(&mut stack, 0, 0);
         Ok(true)
     }
 
 
-    fn permut_iterations(&mut self, stack: &mut Vec<Item>, count: usize)
+    fn permut_iterations(&self, stack: &mut Vec<Item>, count: usize, parse_counter: u64) -> u64
     {
         // End of array arrived
+        let mut parse_counter = parse_counter;
         if count >= self.items.len() {
             // build up simc file
-            self.build_simc_file(stack);
-            return;
+            parse_counter = self.build_simc_file(stack, parse_counter);
+            return parse_counter;
         }
 
         let item_pair = &self.items[count];
@@ -75,14 +74,16 @@ impl Simcraft {
             stack.push(iter.clone());
 
             // step into next iteration
-            self.permut_iterations(stack, count + 1);
+            parse_counter = self.permut_iterations(stack, count + 1, parse_counter);
 
             // remove from stack
             stack.pop();
         }
+
+        return parse_counter;
     }
 
-    fn build_simc_file(&mut self, stack: &Vec<Item>)
+    fn build_simc_file(&self, stack: &Vec<Item>, parse_counter: u64) -> u64
     {
         // build the item list
         let mut item_list: String = String::new();
@@ -110,15 +111,17 @@ impl Simcraft {
         }
 
         // setup config template
-        self.parse_counter = self.parse_counter + 1u64;
+        let mut parse_counter = parse_counter + 1;
 
-        let output_html = self.config.simcraft.html.replace("{}", &self.parse_counter.to_string());
-        let output_txt = self.config.simcraft.txt.replace("{}", &self.parse_counter.to_string());
+        let output_html = self.config.simcraft.html.replace("{}", &parse_counter.to_string());
+        let output_txt = self.config.simcraft.txt.replace("{}", &parse_counter.to_string());
 
         self.template.set_var("output_html", &output_html);
         self.template.set_var("output_txt", &output_txt);
 
         // setup character template
+
+        return parse_counter;
     }
 
     /// Search for item declarations
@@ -164,7 +167,7 @@ impl Simcraft {
 
                         // save name
                         item.name = String::from(&cap_item[2]);
-                        item.slot = slot;
+                        item.slot = slot.clone();
 
                         // extract id's
                         for cap_ids in regex_ids.captures_iter(&cap_item[3]) {

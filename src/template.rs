@@ -5,14 +5,14 @@ use std::io::prelude::*;
 use std::result::{Result};
 use std::io::{Error, ErrorKind};
 use regex::Regex;
-
+use std::cell::RefCell;
 
 #[derive(Default)]
 pub struct Template {
     alias: String,
     file: String,
     data: String,
-    variables: HashMap<String, String>,
+    variables: RefCell<HashMap<String, String>>,
     imports: Vec<Template>
 }
 
@@ -35,7 +35,7 @@ impl Template {
                     alias: String::from(alias),
                     file: String::from(file),
                     data: tmpl,
-                    variables: HashMap::new(),
+                    variables: RefCell::new(HashMap::new()),
                     imports: Vec::new()
                 };
 
@@ -65,7 +65,7 @@ impl Template {
     pub fn list_vars(&self) -> Result<Vec<String>, Error> {
         let mut keys: Vec<String> = Vec::new();
 
-        for (key, _value) in self.variables.iter() {
+        for (key, _value) in self.variables.borrow_mut().iter() {
             keys.push(key.clone());
         }
 
@@ -73,7 +73,7 @@ impl Template {
     }
 
     pub fn var_exist(&self, var: &str) -> bool {
-        for (key, _value) in self.variables.iter() {
+        for (key, _value) in self.variables.borrow_mut().iter() {
             if key == var {
                 return true;
             }
@@ -82,8 +82,8 @@ impl Template {
         return false;
     }
 
-    pub fn set_var(&mut self, var: &str, value: &str) -> Result<bool, Error> {
-        match self.variables.get_mut(var) {
+    pub fn set_var(&self, var: &str, value: &str) -> Result<bool, Error> {
+        match self.variables.borrow_mut().get_mut(var) {
             Some(mut v) => {
                 *v = String::from(value);
                 Ok(true)
@@ -103,22 +103,22 @@ impl Template {
         }
 
         // replace variables
-        for (var, value) in self.variables.iter() {
+        for (var, value) in self.variables.borrow_mut().iter() {
             tpl = tpl.replace(&format!("#[[var={}]]", var), value);
         }
 
         Ok(tpl)
     }
 
-    fn aquire_variables(&mut self) {
+    fn aquire_variables(&self) {
         let regex = Regex::new("#\\[\\[var=(.*)\\]\\]").unwrap();
         for i in regex.captures_iter(&self.data) {
-            self.variables.insert(String::from(&i[1]), String::new());
+            self.variables.borrow_mut().insert(String::from(&i[1]), String::new());
         }
 
         // aquire variables from imported templates
         for tpl in self.imports.iter() {
-            self.variables.extend(tpl.variables.clone());
+                self.variables.borrow_mut().extend(tpl.variables.borrow_mut().clone());
         }
     }
 
