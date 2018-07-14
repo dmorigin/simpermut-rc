@@ -14,22 +14,27 @@ use std::io::{Error, ErrorKind};
 use item_map::ItemMap;
 use item::Item;
 use slot::Slot;
+use template::Template;
 
 
 pub struct Simcraft {
     config: Configuration,
-    items: ItemMap
+    items: ItemMap,
+    template: Template,
+    parse_counter: u64
 }
 
 impl Simcraft {
     pub fn new(config: &Configuration) -> Simcraft {
         Simcraft {
-            config: *config,
-            items: ItemMap::new()
+            config: (*config).clone(),
+            items: ItemMap::new(),
+            template: Template::default(),
+            parse_counter: 0u64
         }
     }
 
-    pub fn compute_item_list(&self, file: &str) -> Result<bool, Error> {
+    pub fn compute_item_list(&mut self, file: &str) -> Result<bool, Error> {
         match File::open(file) {
             Ok(file) => {
                 self.parse_simc_file(&file);
@@ -42,16 +47,19 @@ impl Simcraft {
         }
     }
 
-    pub fn permutation(&self) -> Result<bool, Error> {
+    pub fn permutation(&mut self) -> Result<bool, Error> {
+        // create stack.
         let mut stack: Vec<Item> = Vec::new();
 
-        self.permut_iterations(&mut stack, 0);
+        // generate template
+        self.template = Template::load("basic", &self.config.template).unwrap();
 
+        self.permut_iterations(&mut stack, 0);
         Ok(true)
     }
 
 
-    fn permut_iterations(&self, stack: &mut Vec<Item>, count: usize)
+    fn permut_iterations(&mut self, stack: &mut Vec<Item>, count: usize)
     {
         // End of array arrived
         if count >= self.items.len() {
@@ -74,7 +82,7 @@ impl Simcraft {
         }
     }
 
-    fn build_simc_file(&self, stack: &Vec<Item>)
+    fn build_simc_file(&mut self, stack: &Vec<Item>)
     {
         // build the item list
         let mut item_list: String = String::new();
@@ -102,16 +110,15 @@ impl Simcraft {
         }
 
         // setup config template
-        let mut tmpl_config = get_template(&config.templates.configuration).unwrap();
+        self.parse_counter = self.parse_counter + 1u64;
 
-        let output_html = config.simcraft.html.replace("{}", &ParseId::next().to_string());
-        let output_txt = config.simcraft.txt.replace("{}", &ParseId::count().to_string());
+        let output_html = self.config.simcraft.html.replace("{}", &self.parse_counter.to_string());
+        let output_txt = self.config.simcraft.txt.replace("{}", &self.parse_counter.to_string());
 
-        set_tmpl_var(&mut tmpl_config, "output_html", &output_html).unwrap();
-        set_tmpl_var(&mut tmpl_config, "output_txt", &output_txt).unwrap();
+        self.template.set_var("output_html", &output_html);
+        self.template.set_var("output_txt", &output_txt);
 
         // setup character template
-        let mut tmpl_character = get_template(&config.templates.character).unwrap();
     }
 
     /// Search for item declarations
@@ -127,7 +134,7 @@ impl Simcraft {
     /// 
     /// Install it, type /simc in the chat box and copy all the text into
     /// a file. Now save it to something.simc.
-    fn parse_simc_file(&self, stream : &File)
+    fn parse_simc_file(&mut self, stream : &File)
     {
         // read all in a buffer
         let buffer = BufReader::new(stream);

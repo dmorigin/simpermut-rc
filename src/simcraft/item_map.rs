@@ -19,7 +19,7 @@ mod pair {
     impl Pair {
         pub fn new(slot: &Slot) -> Pair {
             Pair {
-                slot: *slot,
+                slot: slot.clone(),
                 items: Vec::new()
             }
         }
@@ -62,18 +62,18 @@ impl ItemMap {
         return None;
     }
 
-    pub fn push(&self, slot: &Slot, item: &Item) {
+    pub fn push(&mut self, slot: &Slot, item: &Item) {
         // search for existiing one
-        for iter in self.list.iter() {
+        for iter in self.list.iter_mut() {
             if iter.slot == *slot {
-                iter.items.push(*item);
+                iter.items.push(item.clone());
                 return;
             }
         }
 
         // insert new one
         let mut entry = pair::Pair::new(slot);
-        entry.items.push(*item);
+        entry.items.push(item.clone());
         self.list.push(entry);
     }
 
@@ -85,7 +85,7 @@ impl ItemMap {
         self.list.iter()
     }
 
-    pub fn iter_mut(&self) -> IterMut<'_, pair::Pair> {
+    pub fn iter_mut(&mut self) -> IterMut<'_, pair::Pair> {
         self.list.iter_mut()
     }
 }

@@ -1,16 +1,12 @@
 
 {
     "max_legendaries": 2,
+    "template": "templates/dh.legion.simc",
 
     "simcraft": {
         "executeable": "D:/Downloads/simc-735-02-win64/simc.exe",
         "html": "output/parses/html/parse_{}.html",
         "txt": "output/parses/txt/parse_{}.txt"
-    },
-
-    "templates": {
-        "configuration": "templates/global_conf_v1.simc",
-        "character": "templates/dh.legion.simc"
     },
 
     "replaces": {

@@ -1,5 +1,5 @@
 # Configuration
-input="#[[configuration]]"
+#[[import=templates/global_conf_v1.simc]]
 
 demonhunter="Matabei"
 level=110
@@ -13,5 +13,5 @@ spec=havoc
 artifact=3:0:0:0:0:1330:1:1362:1:1016:1:1015:1:1014:1:1013:1:1493:4:1494:1:1495:1:1496:93:1012:1:1011:1:1010:1:1008:4:1007:4:1006:4:1005:4:1004:4:1630:1:1003:4:1002:4:1001:4:1000:4
 crucible=1739:1775:1001/1739:1782:1006/1739:1778:1001
 
-#[[item_list]]
+#[[var=item_list]]
 

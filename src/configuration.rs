@@ -7,49 +7,43 @@ use std::result::{Result};
 use std::io::{Error, ErrorKind};
 
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ReplacedItem {
-    slot: String,
-    id: String,
-    name: String,
-    bonus_id: String,
-    gem_id: String,
-    relic_id: String,
-    enchant_id: String,
+    pub slot: String,
+    pub id: String,
+    pub name: String,
+    pub bonus_id: String,
+    pub gem_id: String,
+    pub relic_id: String,
+    pub enchant_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ReplacedEnchantment {
-    slot: String,
-    id: String
+    pub slot: String,
+    pub id: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Replacement {
-    items: Vec<ReplacedItem>,
-    enchantments: Vec<ReplacedEnchantment>
+    pub items: Vec<ReplacedItem>,
+    pub enchantments: Vec<ReplacedEnchantment>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Simcraft {
-    executeable: String,
-    html: String,
-    txt: String
+    pub executeable: String,
+    pub html: String,
+    pub txt: String
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Templates {
-    configuration: String,
-    character: String
-}
-
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Configuration
 {
-    max_legendaries: i32,
-    simcraft: Simcraft,
-    templates: Templates,
-    replaces: Replacement
+    pub max_legendaries: i32,
+    pub template: String,
+    pub simcraft: Simcraft,
+    pub replaces: Replacement
 }
 
 
@@ -60,14 +54,11 @@ impl Configuration {
     pub fn new() -> Configuration {
         Configuration {
             max_legendaries: 2,
+            template: String::from(""),
             simcraft: Simcraft {
                 executeable: String::from("simc.exe"),
                 html: String::from("output/html/simc_calculation_{}.html"),
                 txt: String::from("output/txt/simc_calculation_{}.txt")
-            },
-            templates: Templates {
-                configuration: String::from(""),
-                character: String::from("")
             },
             replaces: Replacement {
                 items: Vec::new() as Vec<ReplacedItem>,

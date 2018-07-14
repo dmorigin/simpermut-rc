@@ -10,7 +10,6 @@ extern crate singleton;
 use clap::{Arg, App};
 
 mod template;
-use template::*;
 
 mod simcraft;
 use simcraft::*;
@@ -55,7 +54,7 @@ fn main() {
     println!("Read data from input file: {}", item_list_file);
 
     // handle simc
-    let simc = simcraft::Simcraft::new(&config);
+    let mut simc = simcraft::Simcraft::new(&config);
     simc.compute_item_list(item_list_file).unwrap();
     simc.permutation();
 }

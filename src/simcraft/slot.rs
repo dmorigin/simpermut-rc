@@ -6,7 +6,7 @@ use std::io::{Error, ErrorKind};
 
 
 #[derive(PartialEq, PartialOrd, Eq, Hash, Clone)]
-enum ESlot
+pub enum ESlot
 {
     Unkown,
     Head,
@@ -30,8 +30,8 @@ enum ESlot
 #[derive(PartialOrd, Hash, Clone)]
 pub struct Slot
 {
-    slot: ESlot,
-    name: String
+    pub slot: ESlot,
+    pub name: String
 }
 
 
@@ -78,11 +78,11 @@ impl Slot {
     }
 
     pub fn name(&self) -> String {
-        self.name
+        self.name.clone()
     }
 
     pub fn slot(&self) -> ESlot {
-        self.slot
+        self.slot.clone()
     }
 
     fn _get(name: &str) -> Result<ESlot, Error> {
