@@ -37,42 +37,6 @@ off_hand=,id=127830
 # Prydaz, Xavarics Magnum Opus (1000)
 # neck=,id=132444,enchant_id=5437,bonus_id=1811/3630
 #
-# Größenwahn (1000)
-# shoulder=,id=144279,enchant_id=5883,bonus_id=3459/3630
-#
-# Schulterklappen des ausgedörrten Blattwerks (960)
-# shoulder=,id=134452,bonus_id=3536/1612/3337
-#
-# Umhang der Teufelsflammen (1000)
-# back=,id=137066,bonus_id=1811/3630
-#
-# Umhang aus managewebter Seide (960)
-# back=,id=134410,enchant_id=5435,bonus_id=3536/1612/3337
-#
-# Teufelsfledermauslederweste (960)
-# chest=,id=134373,bonus_id=3536/1622/3337
-#
-# Schwergewichtsgelenkbänder der Mo'arg (965)
-# wrist=,id=144485,bonus_id=3536/1617/3337
-#
-# Geist der Finsterflamme (1000)
-# hands=,id=144292,bonus_id=1811/3630
-#
-# Grausamer Zwingenhandschutz (965)
-# hands=,id=133617,bonus_id=3536/1617/3337
-#
-# Schreckensbalggurt (940)
-# waist=,id=121299,bonus_id=3536/42/1602/3528
-#
-# Cinidaria der Symbiont (1000)
-# waist=,id=133976,bonus_id=3459/3630
-#
-# Umarmung des Vergessens (1000)
-# legs=,id=151799,bonus_id=3459/3630
-#
-# Das Opfer von Loramus Thalipedes (1000)
-# feet=,id=137022,bonus_id=3459/3630
-#
 # Ring der Teufelsbeherrschung (965)
 # finger1=,id=144481,enchant_id=5429,bonus_id=3536/1617/3337
 #
@@ -81,16 +45,4 @@ off_hand=,id=127830
 #
 # Kil'jaedens brennender Wunsch (1000)
 # trinket1=,id=144259,bonus_id=3459/3630
-#
-# Alptraumeierschale (970)
-# trinket1=,id=137312,bonus_id=3536/1622/3337
-#
-# Aggramars Überzeugung (1000)
-# trinket1=,id=154173,bonus_id=3984/3997
-#
-# Spitzhacke (4)
-# main_hand=,id=2901
-#
-# Kriegsgleve von Azzinoth (156)
-# off_hand=,id=32838
 #

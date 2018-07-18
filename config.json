@@ -1,12 +1,16 @@
 
 {
     "max_legendaries": 2,
-    "template": "templates/dh.legion.simc",
+    "output_dir": "output",
+    "report_dir": "reports",
+    "template_dir": "templates",
 
     "simcraft": {
+        "template": "dh.legion.simc",
+        "process_template": "proc_{}.simc",
         "executeable": "D:/Downloads/simc-735-02-win64/simc.exe",
-        "html": "output/parses/html/parse_{}.html",
-        "txt": "output/parses/txt/parse_{}.txt"
+        "html": "html/report_{}.html",
+        "json": "json/report_{}.json"
     },
 
     "replaces": {
@@ -14,6 +18,7 @@
             {
                 "slot": "main_hand",
                 "id": "127829",
+                "name": "",
                 "gem_id": "137491/142192/152032",
                 "bonus_id": "719",
                 "relic_id": "3536:1597:3336/3536:1592:3337/3611:1487:3528",
@@ -22,6 +27,7 @@
             {
                 "slot": "off_hand",
                 "id": "127830",
+                "name": "",
                 "gem_id": "",
                 "bonus_id": "",
                 "relic_id": "",
@@ -31,11 +37,11 @@
 
         "enchantments": [
             {
-                "slot": "finger1",
+                "slot": "finger",
                 "id": "5427"
             },
             {
-                "slot": "finger2",
+                "slot": "finger",
                 "id": "5427"
             },
             {

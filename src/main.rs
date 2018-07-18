@@ -6,6 +6,7 @@ extern crate regex;
 extern crate clap;
 extern crate chrono;
 extern crate singleton;
+extern crate uuid;
 
 use clap::{Arg, App};
 
@@ -56,6 +57,6 @@ fn main() {
     // handle simc
     let mut simc = simcraft::Simcraft::new(&config);
     simc.compute_item_list(item_list_file).unwrap();
-    simc.permutation();
+    simc.permutation().unwrap();
 }
 

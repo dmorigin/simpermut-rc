@@ -5,8 +5,8 @@
 # ***********************************************************
 
 # Reports
-html="#[[output_html]]"
-txt="#[[output_txt]]"
+html="#[[var=report_html]]"
+json2="#[[var=report_json]]"
 threads=4
 
 # General
@@ -23,7 +23,7 @@ optimal_raid=1
 
 # Scaling Factors
 #	to enable scale factors set calculate_scale_factors to 1
-calculate_scale_factors=1
+calculate_scale_factors=0
 normalize_scale_factors=1
 scale_only=agility,haste,crit_rating,mastery,versatility,weapon_dps,weapon_offhand_dps
 

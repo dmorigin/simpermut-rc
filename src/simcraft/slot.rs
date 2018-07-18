@@ -1,11 +1,11 @@
 
-use std::cmp::{PartialEq, PartialOrd};
+use std::cmp::{PartialEq};
 use std::default::Default;
 use std::result::{Result};
 use std::io::{Error, ErrorKind};
 
 
-#[derive(PartialEq, PartialOrd, Eq, Hash, Clone)]
+#[derive(PartialEq, PartialOrd, Eq, Hash, Clone, Copy, Debug)]
 pub enum ESlot
 {
     Unkown,
@@ -19,15 +19,17 @@ pub enum ESlot
     Waist,
     Legs,
     Feet,
+    Finger,
     Finger1,
     Finger2,
+    Trinket,
     Trinket1,
     Trinket2,
     MainHand,
     OffHand
 }
 
-#[derive(PartialOrd, Hash, Clone)]
+#[derive(PartialOrd, Hash, Clone, Debug)]
 pub struct Slot
 {
     pub slot: ESlot,
@@ -64,8 +66,8 @@ impl Slot {
     }
 
     pub fn from_str(name: &str) -> Result<Slot, Error> {
-        let eslot: ESlot = match Slot::_get(name) {
-            Ok(s) => s,
+        let eslot: ESlot = match Slot::_get_eslot(name) {
+            Ok(s) => Slot::fix_slot(&s),
             Err(err) => {
                 return Err(Error::new(ErrorKind::InvalidInput, err));
             }
@@ -73,19 +75,53 @@ impl Slot {
 
         Ok(Slot {
             slot: eslot,
-            name: String::from(name)
+            name: Slot::_get_name(&eslot)
         })
     }
 
-    pub fn name(&self) -> String {
-        self.name.clone()
+    pub fn from_eslot(eslot: &ESlot) -> Result<Slot, Error> {
+        Ok(Slot {
+            slot: Slot::fix_slot(eslot),
+            name: Slot::_get_name(&Slot::fix_slot(eslot))
+        })
     }
 
-    pub fn slot(&self) -> ESlot {
-        self.slot.clone()
+    pub fn fix_slot(eslot: &ESlot) -> ESlot {
+        match eslot {
+            ESlot::Finger1 => ESlot::Finger,
+            ESlot::Finger2 => ESlot::Finger,
+            ESlot::Trinket1 => ESlot::Trinket,
+            ESlot::Trinket2 => ESlot::Trinket,
+            _ => eslot.clone()
+        }
     }
 
-    fn _get(name: &str) -> Result<ESlot, Error> {
+    pub fn get_real_slot(slot: &Slot, part: u8) -> Result<Slot, Error> {
+        let eslot = match slot.slot {
+            ESlot::Trinket => {
+                match part {
+                    1 => ESlot::Trinket1,
+                    2 => ESlot::Trinket2,
+                    _ => { return Err(Error::new(ErrorKind::InvalidInput, "Value of part is wrong")); }
+                }
+            },
+            ESlot::Finger => {
+                match part {
+                    1 => ESlot::Finger1,
+                    2 => ESlot::Finger2,
+                    _ => { return Err(Error::new(ErrorKind::InvalidInput, "Value of part is wrong")); }
+                }
+            },
+            _ => slot.slot.clone()
+        };
+
+        Ok(Slot {
+            slot: eslot,
+            name: Slot::_get_name(&eslot)
+        })
+    }
+
+    fn _get_eslot(name: &str) -> Result<ESlot, Error> {
         match name {
             "head" => Ok(ESlot::Head),
             "neck" => Ok(ESlot::Neck),
@@ -97,13 +133,39 @@ impl Slot {
             "hands" => Ok(ESlot::Hands),
             "feet" => Ok(ESlot::Feet),
             "legs" => Ok(ESlot::Legs),
+            "finger" => Ok(ESlot::Finger),
             "finger1" => Ok(ESlot::Finger1),
             "finger2" => Ok(ESlot::Finger2),
+            "trinket" => Ok(ESlot::Trinket),
             "trinket1" => Ok(ESlot::Trinket1),
             "trinket2" => Ok(ESlot::Trinket2),
             "main_hand" => Ok(ESlot::MainHand),
             "off_hand" => Ok(ESlot::OffHand),
             _ => Err(Error::new(ErrorKind::InvalidInput, String::from("Invalid slot name")))
+        }
+    }
+
+    fn _get_name(slot: &ESlot) -> String {
+        match slot {
+            ESlot::Head => String::from("head"),
+            ESlot::Neck => String::from("neck"),
+            ESlot::Shoulder => String::from("shoulder"),
+            ESlot::Back => String::from("back"),
+            ESlot::Chest => String::from("chest"),
+            ESlot::Wrist => String::from("wrist"),
+            ESlot::Waist => String::from("waist"),
+            ESlot::Hands => String::from("hands"),
+            ESlot::Legs => String::from("legs"),
+            ESlot::Feet => String::from("feet"),
+            ESlot::Finger => String::from("finger"),
+            ESlot::Finger1 => String::from("finger1"),
+            ESlot::Finger2 => String::from("finger2"),
+            ESlot::Trinket => String::from("trinket"),
+            ESlot::Trinket1 => String::from("trinket1"),
+            ESlot::Trinket2 => String::from("trinket2"),
+            ESlot::MainHand => String::from("main_hand"),
+            ESlot::OffHand => String::from("off_hand"),
+            _ => String::new()
         }
     }
 }

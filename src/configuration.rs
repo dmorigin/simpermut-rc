@@ -7,7 +7,7 @@ use std::result::{Result};
 use std::io::{Error, ErrorKind};
 
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct ReplacedItem {
     pub slot: String,
     pub id: String,
@@ -18,7 +18,7 @@ pub struct ReplacedItem {
     pub enchant_id: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct ReplacedEnchantment {
     pub slot: String,
     pub id: String
@@ -32,16 +32,20 @@ pub struct Replacement {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Simcraft {
+    pub template: String,
+    pub process_template: String,
     pub executeable: String,
     pub html: String,
-    pub txt: String
+    pub json: String
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Configuration
 {
     pub max_legendaries: i32,
-    pub template: String,
+    pub output_dir: String,
+    pub report_dir: String,
+    pub template_dir: String,
     pub simcraft: Simcraft,
     pub replaces: Replacement
 }
@@ -51,22 +55,6 @@ pub const CONFIG_FILE: &str = "config.json";
 
 
 impl Configuration {
-    pub fn new() -> Configuration {
-        Configuration {
-            max_legendaries: 2,
-            template: String::from(""),
-            simcraft: Simcraft {
-                executeable: String::from("simc.exe"),
-                html: String::from("output/html/simc_calculation_{}.html"),
-                txt: String::from("output/txt/simc_calculation_{}.txt")
-            },
-            replaces: Replacement {
-                items: Vec::new() as Vec<ReplacedItem>,
-                enchantments: Vec::new() as Vec<ReplacedEnchantment>
-            }
-        }
-    }
-
     pub fn load(file: &str) -> Result<Configuration, Error> {
         match File::open(file) {
             Ok(json) => {

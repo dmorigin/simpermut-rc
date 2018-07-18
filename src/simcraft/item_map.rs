@@ -1,8 +1,7 @@
 
-use slot::Slot;
+use slot::{Slot, ESlot};
 use item::Item;
-use std::slice::{Iter, IterMut};
-use std::ops::{Index, IndexMut};
+use std::option::Option;
 
 
 mod pair {
@@ -48,20 +47,6 @@ impl ItemMap {
         }
     }
 
-    pub fn index(&self, slot: &Slot) -> Option<usize> {
-        let mut i: usize = 0;
-
-        for iter in self.list.iter() {
-            if iter.slot == *slot {
-                return Some(i);
-            }
-
-            i = i + 1;
-        }
-
-        return None;
-    }
-
     pub fn push(&mut self, slot: &Slot, item: &Item) {
         // search for existiing one
         for iter in self.list.iter_mut() {
@@ -77,29 +62,17 @@ impl ItemMap {
         self.list.push(entry);
     }
 
+    pub fn get_slot(&self, pattern: &ESlot) -> Option<&Vec<Item>> {
+        for iter in self.list.iter() {
+            if iter.slot.slot == *pattern {
+                return Some(&iter.items);
+            }
+        }
+
+        None
+    }
+
     pub fn len(&self) -> usize {
         self.list.len()
-    }
-
-    pub fn iter(&self) -> Iter<'_, pair::Pair> {
-        self.list.iter()
-    }
-
-    pub fn iter_mut(&mut self) -> IterMut<'_, pair::Pair> {
-        self.list.iter_mut()
-    }
-}
-
-impl Index<usize> for ItemMap {
-    type Output = pair::Pair;
-
-    fn index(&self, index: usize) -> &pair::Pair {
-        &self.list[index]
-    }
-}
-
-impl IndexMut<usize> for ItemMap {
-    fn index_mut<'a>(&'a mut self, index: usize) -> &'a mut pair::Pair {
-        &mut self.list[index]
     }
 }

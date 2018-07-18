@@ -55,7 +55,7 @@ impl Template {
         match File::create(file) {
             Ok(mut f) => {
                 // write data to disc
-                f.write(String::from(tpl).as_bytes());
+                f.write(String::from(tpl).as_bytes()).unwrap();
                 Ok(true)
             },
             Err(err) => Err(err)
@@ -99,12 +99,26 @@ impl Template {
 
         // insert imports
         for import in self.imports.iter() {
-            tpl = tpl.replace(&format!("#[[import={}", import.file), &import.compile().unwrap());
+            tpl = tpl.replace(&format!("#[[import={}]]", import.file), &import._compile().unwrap());
         }
 
         // replace variables
         for (var, value) in self.variables.borrow_mut().iter() {
             tpl = tpl.replace(&format!("#[[var={}]]", var), value);
+        }
+
+        Ok(tpl)
+    }
+
+    /// Internal compiler function
+    /// 
+    /// It is used to capture all imports with assigning variables.
+    fn _compile(&self) -> Result<String, Error> {
+        let mut tpl: String = self.data.clone();
+
+        // insert imports
+        for import in self.imports.iter() {
+            tpl = tpl.replace(&format!("#[[import={}]]", import.file), &import._compile().unwrap());
         }
 
         Ok(tpl)
@@ -128,5 +142,9 @@ impl Template {
             let tpl = Template::load("", &i[1]).unwrap();
             self.imports.push(tpl);
         }
+    }
+
+    pub fn get_alias(&self) -> String {
+        self.alias.clone()
     }
 }
