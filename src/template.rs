@@ -25,7 +25,7 @@ impl Template {
     /// return:  Returns an std::result::Result with a Template instance.
     /// 
     pub fn load(file: &str) -> Result<Template, Error> {
-        println!("Open template '{}'", file);
+        //println!("Open template '{}'", file);
 
         match File::open(file) {
             Ok(mut fin) => {

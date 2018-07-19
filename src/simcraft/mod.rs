@@ -286,7 +286,7 @@ impl Simcraft {
         let process_tpl = format!("{}/{}", &self.compile_dir,
             self.config.simcraft.process_template.replace("{}", &parse_counter.to_string()));
 
-        println!("Run {} with compiled template {}", &self.config.simcraft.executeable, &process_tpl);
+        //println!("Run {} with compiled template {}", &self.config.simcraft.executeable, &process_tpl);
 
         Template::store(&process_tpl, &self.template.compile().unwrap()).unwrap();
 
