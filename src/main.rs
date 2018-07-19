@@ -8,10 +8,11 @@ extern crate serde_json;
 extern crate regex;
 extern crate clap;
 extern crate chrono;
-extern crate singleton;
 extern crate uuid;
+extern crate indicatif;
 
 use clap::{Arg, App};
+use chrono::Duration;
 
 mod template;
 
@@ -22,7 +23,7 @@ mod configuration;
 use configuration::*;
 
 
-const VERSION: &str = "0.1.1";
+const VERSION: &str = "0.1.2";
 const AUTHOR: &str = "[DM]Origin";
 
 
@@ -60,6 +61,34 @@ fn main() {
     // handle simc
     let mut simc = simcraft::Simcraft::new(&config);
     simc.compute_item_list(item_list_file).unwrap();
-    simc.permutation().unwrap();
+    
+    // calculate the number of iterations
+    // Approximately 15s per iteration
+    let iterations = simc.permutation(true, 0).unwrap();
+    println!("Your request generates {} iterations", iterations);
+    println!("This runs for approximalty: {}", fmt_duration(&Duration::seconds((iterations * 15) as i64)));
+    println!("Do you want to continue? (y == yes / n == no)");
+
+    loop {
+        let mut accept: String = String::new();
+        std::io::stdin().read_line(&mut accept)
+            .expect("Failed to read user input");
+        
+        match &accept.trim()[..] {
+            "y" => { break; },
+            "Y" => { break; },
+            "n" => { return; },
+            "N" => { return; }
+            _ => ()
+        }
+    }
+
+    // start permutation
+    simc.permutation(false, iterations).unwrap();
 }
 
+
+fn fmt_duration(duration: &Duration) -> String {
+    format!("{} Days - {}:{}:{}", duration.num_days(), duration.num_hours(), 
+        duration.num_minutes(), duration.num_seconds())
+}

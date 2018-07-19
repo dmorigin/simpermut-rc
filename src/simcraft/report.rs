@@ -47,7 +47,7 @@ impl Generator {
         let fin = File::open(&json_report).unwrap();
         let json: Value = read_json(&fin).unwrap();
 
-        println!("Push a new report: {}", &html_report);
+        //println!("Push a new report: {}", &html_report);
 
         // extract dps value
         let dps: f32 = json["sim"]["players"][0]["collected_data"]["dps"]["mean"]
