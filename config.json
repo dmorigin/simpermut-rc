@@ -4,50 +4,79 @@
     "output_dir": "output",
     "report_dir": "reports",
     "template_dir": "templates",
+    "log_dir": "logs",
 
     "simcraft": {
+        "best_of": 50,
         "template": "dh.legion.simc",
         "process_template": "proc_{}.simc",
-        "executeable": "D:/Downloads/simc-735-02-win64/simc.exe",
-        "html": "html/report_{}.html",
-        "json": "json/report_{}.json"
+        "executeable": "D:/Development/World of Warcraft/simc-bfa/simc.exe",
+        "html": "html/simc_report_{}.html",
+        "json": "json/simc_report_{}.json"
     },
 
     "replaces": {
         "items": [
             {
                 "slot": "main_hand",
-                "id": "127829",
+                "id": 127829,
                 "name": "",
                 "gem_id": "137491/142192/152032",
                 "bonus_id": "719",
                 "relic_id": "3536:1597:3336/3536:1592:3337/3611:1487:3528",
-                "enchant_id": "0"
+                "enchant_id": 0
             },
             {
                 "slot": "off_hand",
-                "id": "127830",
+                "id": 127830,
                 "name": "",
                 "gem_id": "",
                 "bonus_id": "",
                 "relic_id": "",
-                "enchant_id": ""
+                "enchant_id": 0
             }
         ],
 
         "enchantments": [
             {
                 "slot": "finger",
-                "id": "5427"
+                "id": 5427
             },
             {
                 "slot": "finger",
-                "id": "5427"
+                "id": 5427
             },
             {
                 "slot": "back",
-                "id": "5435"
+                "id": 5435
             }
         ]
-    }
+    },
+
+    "limits": [
+        {
+            "max": 2,
+            "items": [
+                137061,
+                132444,
+                144279,
+                137071,
+                151798,
+                137066,
+                137014,
+                137090,
+                137091,
+                144292,
+                133976,
+                151799,
+                138949,
+                137022,
+                151639,
+                152626,
+                138854,
+                144249,
+                144259 
+            ]
+        }
+    ]
 }

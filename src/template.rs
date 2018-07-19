@@ -26,6 +26,8 @@ impl Template {
     /// return:  Returns an std::result::Result with a Template instance.
     /// 
     pub fn load(alias: &str, file: &str) -> Result<Template, Error> {
+        println!("Open template '{}'", file);
+
         match File::open(file) {
             Ok(mut fin) => {
                 let mut tmpl = String::new();
@@ -125,8 +127,9 @@ impl Template {
     }
 
     fn aquire_variables(&self) {
-        let regex = Regex::new("#\\[\\[var=(.*)\\]\\]").unwrap();
+        let regex = Regex::new("#\\[\\[var=([a-z0-9_-]+)\\]\\]").unwrap();
         for i in regex.captures_iter(&self.data) {
+            println!("Aquire template variable: '{}'", &i[1]);
             self.variables.borrow_mut().insert(String::from(&i[1]), String::new());
         }
 
@@ -137,7 +140,7 @@ impl Template {
     }
 
     fn aquire_imports(&mut self) {
-        let regex = Regex::new("#\\[\\[import=(.*)\\]\\]").unwrap();
+        let regex = Regex::new("#\\[\\[import=([a-zA-Z0-9\\.-_/\\\\]+)\\]\\]").unwrap();
         for i in regex.captures_iter(&self.data) {
             let tpl = Template::load("", &i[1]).unwrap();
             self.imports.push(tpl);

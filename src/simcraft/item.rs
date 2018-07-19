@@ -7,25 +7,25 @@ use configuration::ReplacedItem;
 #[derive(Default, Clone)]
 pub struct Item
 {
-    pub id: String,
+    pub id: u32,
     pub slot: Slot,
     pub name: String,
     pub bonus_id: String,
     pub gem_id: String,
     pub relic_id: String,
-    pub enchant_id: String,
+    pub enchant_id: u32,
 }
 
 impl Item {
     pub fn new() -> Item {
         Item {
-            id: String::new(),
+            id: 0,
             slot: Slot::new(),
             name: String::new(),
             bonus_id: String::new(),
             gem_id: String::new(),
             relic_id: String::new(),
-            enchant_id: String::new()
+            enchant_id: 0
         }
     }
 

@@ -1,0 +1,147 @@
+# SimC Addon 1.10.1
+
+html="data.simc.html"
+json2="data.simc.json"
+
+demonhunter="Matabei"
+level=110
+race=blood_elf
+region=eu
+server=alleria
+role=attack
+professions=herbalism=100/mining=96
+talents=3213213
+spec=havoc
+#artifact=3:0:0:0:0:1330:1:1362:1:1016:1:1015:1:1014:1:1013:1:1493:4:1494:1:1495:1:1496:100:1012:1:1011:1:1010:1:1008:4:1007:4:1006:4:1005:4:1004:4:1630:1:1003:4:1002:4:1001:4:1000:4
+#crucible=0/0/0
+
+head=,id=151336,bonus_id=3536/1550/3337
+neck=,id=152283,enchant_id=5437,bonus_id=3611/1492/3336
+shoulder=,id=151988,bonus_id=3612/1517/3337
+back=,id=152119,enchant_id=5435,bonus_id=3612/40/1502/3528
+chest=,id=152118,bonus_id=3611/1497/3336
+wrist=,id=137512,bonus_id=3536/1555/3337
+hands=,id=152120,enchant_id=5444,bonus_id=3611/1492/3336
+waist=,id=151990,bonus_id=3611/40/1492/3336
+legs=,id=152122,bonus_id=3611/41/1487/3528
+feet=,id=137324,bonus_id=3536/1550/3337
+finger1=,id=137038,enchant_id=5427,gem_id=151580,bonus_id=3529/1811/3630
+finger2=,id=132452,enchant_id=5427,gem_id=130219,bonus_id=1811/3630
+trinket1=,id=154174,bonus_id=3984/3997
+trinket2=,id=151964,bonus_id=3611/1492/3336
+main_hand=,id=127829,gem_id=155848/142192/155848,bonus_id=719/1502/1507/1504,relic_id=3611:1502:3336/3536:1557:3337/3611:1507:3336
+off_hand=,id=127830
+
+### Gear from Bags
+#
+# Gelaugte Ledergugel (220)
+# head=,id=134240,bonus_id=3536/1808/1531/3528
+#
+# Gelaugte Ledergugel (235)
+# head=,id=134240,bonus_id=3536/1546/3337
+#
+# Raddons Kaskadenblick (265)
+# head=,id=137061,bonus_id=3529/1811/3630
+#
+# Prydaz, Xavarics Magnum Opus (265)
+# neck=,id=132444,enchant_id=5437,gem_id=151584,bonus_id=1811/3630
+#
+# Größenwahn (265)
+# shoulder=,id=144279,enchant_id=5883,bonus_id=3459/3630
+#
+# Schulterklappen des ausgedörrten Blattwerks (240)
+# shoulder=,id=134452,bonus_id=3536/1550/3337
+#
+# Schulterstücke des Runenmeisters (265)
+# shoulder=,id=137071,bonus_id=3459/3630
+#
+# Umhang aus managewebter Seide (240)
+# back=,id=134410,enchant_id=5435,bonus_id=3536/1550/3337
+#
+# Chaostheorie (265)
+# back=,id=151798,bonus_id=1811/3630
+#
+# Umhang der Teufelsflammen (265)
+# back=,id=137066,bonus_id=1811/3630
+#
+# Umhang der Brennenden Vorhut (250)
+# back=,id=151937,bonus_id=3612/1512/3336
+#
+# Tuch des Teufelstöters (230)
+# back=,id=152119,enchant_id=5310,gem_id=151580,bonus_id=3611/1808/1492/3336
+#
+# Achor, der ewige Hunger (265)
+# chest=,id=137014,bonus_id=3459/3630
+#
+# Teufelsfledermauslederweste (240)
+# chest=,id=134373,bonus_id=3536/1551/3337
+#
+# Gelenkbänder des infernalischen Strategen (250)
+# wrist=,id=151992,bonus_id=3612/42/1512/3336
+#
+# Bionische Stabilisatoren der Mo'arg (265)
+# wrist=,id=137090,bonus_id=1811/3630
+#
+# Schwergewichtsgelenkbänder der Mo'arg (245)
+# wrist=,id=144485,bonus_id=3536/1555/3337
+#
+# Verlorene Unterarmschienen des Entweihers (265)
+# wrist=,id=137091,bonus_id=1811/3630
+#
+# Geist der Finsterflamme (265)
+# hands=,id=144292,bonus_id=1811/3630
+#
+# Grausamer Zwingenhandschutz (245)
+# hands=,id=133617,bonus_id=3536/1555/3337
+#
+# Schreckensbalggurt (220)
+# waist=,id=121299,bonus_id=3536/42/1531/3528
+#
+# Cinidaria der Symbiont (265)
+# waist=,id=133976,bonus_id=3459/3630
+#
+# Umarmung des Vergessens (265)
+# legs=,id=151799,bonus_id=3459/3630
+#
+# Kirel narak (265)
+# feet=,id=138949,bonus_id=3459/3630
+#
+# Das Opfer von Loramus Thalipedes (265)
+# feet=,id=137022,bonus_id=3459/3630
+#
+# Seele des Rächers (265)
+# finger1=,id=151639,enchant_id=5427,gem_id=130219,bonus_id=1811/3630
+#
+# Ring der Teufelsbeherrschung (245)
+# finger1=,id=144481,enchant_id=5429,bonus_id=3536/1555/3337
+#
+# Insigne der Großen Armee (265)
+# finger1=,id=152626,bonus_id=3459/3630
+#
+# Schleife der gehässigen Motive (240)
+# finger1=,id=134530,enchant_id=5429,bonus_id=3536/41/1550/3337
+#
+# Fragment des Kerkers des Verräters (265)
+# finger1=,id=138854,bonus_id=3459/3630
+#
+# Ring des fanatischen Folterers (230)
+# finger1=,id=152284,enchant_id=5427,bonus_id=3611/1492/3336
+#
+# Archimondes wiedergeborener Hass (265)
+# trinket1=,id=144249,bonus_id=3459/3630
+#
+# Kil'jaedens brennender Wunsch (265)
+# trinket1=,id=144259,bonus_id=3459/3630
+#
+# Aggramars Überzeugung (280)
+# trinket1=,id=154173,bonus_id=3984/3997
+#
+# Alptraumeierschale (250)
+# trinket1=,id=137312,bonus_id=3536/1560/3337
+#
+# Spitzhacke (4)
+# main_hand=,id=2901
+#
+# Kriegsgleve von Azzinoth (90)
+# off_hand=,id=32838
+#

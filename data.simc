@@ -1,4 +1,7 @@
-# SimC Addon 1.8.9
+# SimC Addon 1.10.1
+
+html="data.simc.html"
+json2="data.simc.json"
 
 demonhunter="Matabei"
 level=110
@@ -6,43 +9,33 @@ race=blood_elf
 region=eu
 server=alleria
 role=attack
-professions=herbalism=800/mining=796
-talents=3311333
+professions=herbalism=100/mining=96
+talents=3213213
 spec=havoc
-artifact=3:0:0:0:0:1330:1:1362:1:1016:1:1015:1:1014:1:1013:1:1493:4:1494:1:1495:1:1496:93:1012:1:1011:1:1010:1:1008:4:1007:4:1006:4:1005:4:1004:4:1630:1:1003:4:1002:4:1001:4:1000:4
-crucible=1739:1775:1001/1739:1782:1006/1739:1778:1001
+#artifact=3:0:0:0:0:1330:1:1362:1:1016:1:1015:1:1014:1:1013:1:1493:4:1494:1:1495:1:1496:100:1012:1:1011:1:1010:1:1008:4:1007:4:1006:4:1005:4:1004:4:1630:1:1003:4:1002:4:1001:4:1000:4
+#crucible=0/0/0
 
-head=,id=137061,bonus_id=3529/1811/3630
+head=,id=151336,bonus_id=3536/1550/3337
 neck=,id=152283,enchant_id=5437,bonus_id=3611/1492/3336
 shoulder=,id=151988,bonus_id=3612/1517/3337
-back=,id=152119,enchant_id=5310,gem_id=151580,bonus_id=3611/1808/1492/3336
+back=,id=152119,enchant_id=5435,bonus_id=3612/40/1502/3528
 chest=,id=152118,bonus_id=3611/1497/3336
-wrist=,id=137512,bonus_id=3536/1617/3337
+wrist=,id=137512,bonus_id=3536/1555/3337
 hands=,id=152120,enchant_id=5444,bonus_id=3611/1492/3336
 waist=,id=151990,bonus_id=3611/40/1492/3336
 legs=,id=152122,bonus_id=3611/41/1487/3528
-feet=,id=137324,bonus_id=3536/1612/3337
+feet=,id=137324,bonus_id=3536/1550/3337
 finger1=,id=137038,enchant_id=5427,gem_id=151580,bonus_id=3529/1811/3630
-finger2=,id=152284,enchant_id=5427,bonus_id=3611/1492/3336
+finger2=,id=132452,enchant_id=5427,gem_id=130219,bonus_id=1811/3630
 trinket1=,id=154174,bonus_id=3984/3997
 trinket2=,id=151964,bonus_id=3611/1492/3336
-main_hand=,id=127829,gem_id=155848/142192/155848,bonus_id=719,relic_id=3611:1502:3336/3536:1592:3337/3611:1507:3336
+main_hand=,id=127829,gem_id=155848/142192/155848,bonus_id=719/1502/1507/1504,relic_id=3611:1502:3336/3536:1557:3337/3611:1507:3336
 off_hand=,id=127830
 
 ### Gear from Bags
 #
-# Gelaugte Ledergugel (955)
-# head=,id=134240,bonus_id=3536/1617/3337
+# Gelaugte Ledergugel (220)
+# head=,id=134240,bonus_id=3536/1808/1531/3528
 #
-# Prydaz, Xavarics Magnum Opus (1000)
-# neck=,id=132444,enchant_id=5437,bonus_id=1811/3630
-#
-# Ring der Teufelsbeherrschung (965)
-# finger1=,id=144481,enchant_id=5429,bonus_id=3536/1617/3337
-#
-# Schleife der gehässigen Motive (960)
-# finger1=,id=134530,enchant_id=5429,bonus_id=3536/41/1612/3337
-#
-# Kil'jaedens brennender Wunsch (1000)
-# trinket1=,id=144259,bonus_id=3459/3630
-#
+# Chaostheorie (265)
+# back=,id=151798,bonus_id=1811/3630

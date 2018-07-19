@@ -2,6 +2,9 @@
 #[macro_use]
 extern crate serde_derive;
 
+extern crate serde;
+extern crate serde_json;
+
 extern crate regex;
 extern crate clap;
 extern crate chrono;
@@ -19,7 +22,7 @@ mod configuration;
 use configuration::*;
 
 
-const VERSION: &str = "0.0.1";
+const VERSION: &str = "0.1.0";
 const AUTHOR: &str = "[DM]Origin";
 
 

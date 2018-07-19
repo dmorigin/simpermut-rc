@@ -2,6 +2,7 @@
 pub mod slot;
 pub mod item_map;
 pub mod item;
+pub mod report;
 
 
 use regex::Regex;
@@ -18,6 +19,7 @@ use item::Item;
 use slot::{Slot, ESlot};
 use template::Template;
 use configuration::{ReplacedEnchantment};
+use report::Generator;
 
 
 pub struct Simcraft {
@@ -25,7 +27,9 @@ pub struct Simcraft {
     items: ItemMap,
     template: Template,
     report_dir: String,
-    compile_dir: String
+    compile_dir: String,
+    log_dir: String,
+    report: Generator
 }
 
 impl Simcraft {
@@ -34,9 +38,11 @@ impl Simcraft {
         let output_dir = format!("{}/{}", config.output_dir, Uuid::new_v4().to_string());
         let report_dir = format!("{}/{}", output_dir, config.report_dir);
         let compile_dir = format!("{}/compiles", output_dir);
+        let log_dir = format!("{}/{}", output_dir, config.log_dir);
 
         create_dir_all(&report_dir).unwrap();
         create_dir_all(&compile_dir).unwrap();
+        create_dir_all(&log_dir).unwrap();
 
         // add replaced items
         let mut item_map = ItemMap::new();
@@ -49,8 +55,10 @@ impl Simcraft {
             config: (*config).clone(),
             items: item_map,
             template: Template::default(),
-            report_dir: report_dir,
-            compile_dir: compile_dir
+            report_dir: report_dir.clone(),
+            compile_dir: compile_dir,
+            log_dir: log_dir,
+            report: Generator::new(config, &report_dir)
         }
     }
 
@@ -79,6 +87,9 @@ impl Simcraft {
         self.template = Template::load("basic", &tpl).unwrap();
 
         self.permut_iteration_single(&mut stack, &ESlot::Head, 0);
+
+        // generate report
+        self.report.compile();
         Ok(true)
     }
 
@@ -94,6 +105,11 @@ impl Simcraft {
         let items = self.items.get_slot(slot).unwrap();
         
         for item in items.iter() {
+            // check limits
+            if self.has_multiple_of_them(&stack) {
+                continue;
+            }
+
             // add my own one
             stack.push(item.clone());
 
@@ -128,6 +144,11 @@ impl Simcraft {
         // slot finger1
         let slot1_items = self.items.get_slot(slot).unwrap();
         for slot1 in slot1_items.iter() {
+            // check limits
+            if self.has_multiple_of_them(&stack) {
+                continue;
+            }
+
             // add my own one
             let mut item = slot1.clone();
             item.slot = Slot::get_real_slot(&slot1.slot, 1).unwrap();
@@ -136,7 +157,13 @@ impl Simcraft {
             // slot finger2
             let slot2_items = self.items.get_slot(slot).unwrap();
             for slot2 in slot2_items.iter().skip(counter) {
+                // cannot add the same item on both slots
                 if slot1.id == slot2.id {
+                    continue;
+                }
+
+                // check limits
+                if self.has_multiple_of_them(&stack) {
                     continue;
                 }
 
@@ -187,7 +214,7 @@ impl Simcraft {
                 entry.push_str(&format!(",bonus_id={}", item.bonus_id));
             }
 
-            if item.enchant_id.len() > 0 {
+            if item.enchant_id != 0 {
                 entry.push_str(&format!(",enchant_id={}", item.enchant_id));
             }
 
@@ -220,19 +247,22 @@ impl Simcraft {
         Template::store(&process_tpl, &self.template.compile().unwrap()).unwrap();
 
         // execute template
-        let stdout = format!("{}/{}", &self.compile_dir, "stdout.log");
+        let stdout = format!("{}/{}_{}.log", &self.log_dir, "stdout", &parse_counter.to_string());
         let stdout = File::create(&stdout).unwrap();
 
-        let stderr = format!("{}/{}", &self.compile_dir, "stderr.log");
+        let stderr = format!("{}/{}_{}.log", &self.log_dir, "stderr", &parse_counter.to_string());
         let stderr = File::create(&stderr).unwrap();
-/*
+
         let mut process = Command::new(&self.config.simcraft.executeable)
             .arg(process_tpl)
             .stdout(Stdio::from(stdout))
             .stderr(Stdio::from(stderr))
             .spawn().unwrap();
         process.wait().unwrap();
-        */
+
+        // generate report
+        self.report.push(&report_json, &report_html);
+
         return parse_counter;
     }
 
@@ -296,11 +326,11 @@ impl Simcraft {
                             //println!("ids: {:?}", cap_ids);
 
                             match &cap_ids[1] {
-                                "id" => item.id = String::from(&cap_ids[2]),
+                                "id" => item.id = String::from(&cap_ids[2]).parse::<u32>().unwrap(),
                                 "gem_id" => item.gem_id = String::from(&cap_ids[2]),
                                 "bonus_id" => item.bonus_id = String::from(&cap_ids[2]),
                                 "relic_id" => item.relic_id = String::from(&cap_ids[2]),
-                                "enchant_id" => item.enchant_id = String::from(&cap_ids[2]),
+                                "enchant_id" => item.enchant_id = String::from(&cap_ids[2]).parse::<u32>().unwrap(),
                                 _ => ()
                             }
                         }
@@ -363,5 +393,30 @@ impl Simcraft {
             ESlot::MainHand => Some(ESlot::OffHand),
             _ => None
         }
+    }
+
+    fn has_multiple_of_them(&self, stack: &Vec<Item>) -> bool {
+
+        // step through all limits
+        for i in self.config.limits.iter() {
+            let mut count = 0u32;
+
+            // check items
+            for s in stack.iter() {
+                // is in limit list
+                for l in i.items.iter() {
+                    if *l == s.id {
+                        count += 1;
+                    }
+
+                    // limit arrived
+                    if count >= i.max {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        false
     }
 }
