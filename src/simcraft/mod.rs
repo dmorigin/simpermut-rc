@@ -116,10 +116,10 @@ impl Simcraft {
             &ESlot::Head,
             0);
 
-        // generate report
         progressbar.finish();
 
         if !count_variations {
+            // generate report
             self.report.compile();
             println!("Permutation finished: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
         }
