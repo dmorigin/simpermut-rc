@@ -79,13 +79,6 @@ impl Slot {
         })
     }
 
-    pub fn from_eslot(eslot: &ESlot) -> Result<Slot, Error> {
-        Ok(Slot {
-            slot: Slot::fix_slot(eslot),
-            name: Slot::_get_name(&Slot::fix_slot(eslot))
-        })
-    }
-
     pub fn fix_slot(eslot: &ESlot) -> ESlot {
         match eslot {
             ESlot::Finger1 => ESlot::Finger,

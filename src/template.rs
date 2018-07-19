@@ -9,7 +9,6 @@ use std::cell::RefCell;
 
 #[derive(Default)]
 pub struct Template {
-    alias: String,
     file: String,
     data: String,
     variables: RefCell<HashMap<String, String>>,
@@ -25,7 +24,7 @@ impl Template {
     /// 
     /// return:  Returns an std::result::Result with a Template instance.
     /// 
-    pub fn load(alias: &str, file: &str) -> Result<Template, Error> {
+    pub fn load(file: &str) -> Result<Template, Error> {
         println!("Open template '{}'", file);
 
         match File::open(file) {
@@ -34,7 +33,6 @@ impl Template {
                 fin.read_to_string(&mut tmpl).expect("Can't read the template content!");
 
                 let mut tpl = Template {
-                    alias: String::from(alias),
                     file: String::from(file),
                     data: tmpl,
                     variables: RefCell::new(HashMap::new()),
@@ -53,17 +51,17 @@ impl Template {
         }
     }
 
-    pub fn store(file: &str, tpl: &str) -> Result<bool, Error> {
+    pub fn store(file: &str, tpl: &str) -> Result<(), Error> {
         match File::create(file) {
             Ok(mut f) => {
                 // write data to disc
                 f.write(String::from(tpl).as_bytes()).unwrap();
-                Ok(true)
+                Ok(())
             },
             Err(err) => Err(err)
         }
     }
-
+/*
     pub fn list_vars(&self) -> Result<Vec<String>, Error> {
         let mut keys: Vec<String> = Vec::new();
 
@@ -83,12 +81,12 @@ impl Template {
 
         return false;
     }
-
-    pub fn set_var(&self, var: &str, value: &str) -> Result<bool, Error> {
+*/
+    pub fn set_var(&self, var: &str, value: &str) -> Result<(), Error> {
         match self.variables.borrow_mut().get_mut(var) {
-            Some(mut v) => {
+            Some(v) => {
                 *v = String::from(value);
-                Ok(true)
+                Ok(())
             },
             None => {
                 Err(Error::new(ErrorKind::NotFound, format!("Variable {} not exist", var)))
@@ -129,7 +127,7 @@ impl Template {
     fn aquire_variables(&self) {
         let regex = Regex::new("#\\[\\[var=([a-z0-9_-]+)\\]\\]").unwrap();
         for i in regex.captures_iter(&self.data) {
-            println!("Aquire template variable: '{}'", &i[1]);
+            //println!("Aquire template variable: '{}'", &i[1]);
             self.variables.borrow_mut().insert(String::from(&i[1]), String::new());
         }
 
@@ -142,12 +140,8 @@ impl Template {
     fn aquire_imports(&mut self) {
         let regex = Regex::new("#\\[\\[import=([a-zA-Z0-9\\.-_/\\\\]+)\\]\\]").unwrap();
         for i in regex.captures_iter(&self.data) {
-            let tpl = Template::load("", &i[1]).unwrap();
+            let tpl = Template::load(&i[1]).unwrap();
             self.imports.push(tpl);
         }
-    }
-
-    pub fn get_alias(&self) -> String {
-        self.alias.clone()
     }
 }

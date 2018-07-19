@@ -78,19 +78,19 @@ impl Simcraft {
     /// This function start the whole permutation process. The process starts with
     /// the head slot. This is a single step permutation. Bevor this step, the
     /// configured template will be load.
-    pub fn permutation(&mut self) -> Result<bool, Error> {
+    pub fn permutation(&mut self) -> Result<(), Error> {
         // create stack.
         let mut stack: Vec<Item> = Vec::new();
 
         // generate template
         let tpl: String = format!("{}/{}", self.config.template_dir, self.config.simcraft.template);
-        self.template = Template::load("basic", &tpl).unwrap();
+        self.template = Template::load(&tpl).unwrap();
 
         self.permut_iteration_single(&mut stack, &ESlot::Head, 0);
 
         // generate report
         self.report.compile();
-        Ok(true)
+        Ok(())
     }
 
     /// This method process a single iteration of the permutation. This means it will

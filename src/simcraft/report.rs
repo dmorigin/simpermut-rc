@@ -2,7 +2,7 @@
 
 use configuration::Configuration;
 use std::fs::File;
-use serde_json::{from_reader as read_json, Value, Error};
+use serde_json::{from_reader as read_json, Value};
 use std::cell::RefCell;
 use template::Template;
 
@@ -26,8 +26,8 @@ pub struct Generator
 impl Generator {
     pub fn new(configuration: &Configuration, reports: &str) -> Generator {
         // load templates
-        let report = Template::load("report", &format!("{}/{}", &configuration.template_dir, "report.html")).unwrap();
-        let list_entry = Template::load("list_entry", &format!("{}/{}", &configuration.template_dir, "report_list_entry.html")).unwrap();
+        let report = Template::load(&format!("{}/{}", &configuration.template_dir, "report.html")).unwrap();
+        let list_entry = Template::load(&format!("{}/{}", &configuration.template_dir, "report_list_entry.html")).unwrap();
 
         report.set_var("best_of", &configuration.simcraft.best_of.to_string()).unwrap();
         report.set_var("report_dir", reports).unwrap();
@@ -69,7 +69,7 @@ impl Generator {
                     break;
                 }
 
-                at += 0;
+                at += 1;
             }
 
             self.reports.borrow_mut().insert(at, Report {
@@ -110,8 +110,8 @@ impl Generator {
         // list all reports
         for r in self.reports.borrow().iter() {
             // fill template
-            self.tpl_list_entry.set_var("dps", &r.dps.to_string()).unwrap();
-            self.tpl_list_entry.set_var("val_now", &(r.dps / max_dps).to_string()).unwrap();
+            self.tpl_list_entry.set_var("dps", &(r.dps.round() as i32).to_string()).unwrap();
+            self.tpl_list_entry.set_var("val_now", &(((r.dps / max_dps) * 100.0).round() as i32).to_string()).unwrap();
             self.tpl_list_entry.set_var("html_report_file", &self._get_report_file(&r.html)).unwrap();
             self.tpl_list_entry.set_var("html_report_name", &self._get_report_name(&r.html)).unwrap();
 
