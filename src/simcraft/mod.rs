@@ -87,6 +87,7 @@ impl Simcraft {
         // create stack.
         let mut stack: Vec<Item> = Vec::new();
         let mut progressbar: ProgressBar = ProgressBar::new(iterations + 2);
+        let now = Local::now();
 
         // setup progress bar
         progressbar.set_style(
@@ -97,15 +98,14 @@ impl Simcraft {
         if !count_variations {
             println!("Start permutation with {} iterations", iterations);
             println!("You can find the outputs at: {}", self.output_dir);
-            println!("Starts at: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
+            println!("Starts at: {}", now.format("%d.%m.%Y - %H:%M:%S"));
             println!("Finished approximatly at: {}",
-                (Local::now() + Duration::seconds((iterations * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
+                (now + Duration::seconds((iterations * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
 
             // generate template
             let tpl: String = format!("{}/{}", self.config.template_dir, self.config.simcraft.template);
             self.template = Template::load(&tpl).unwrap();
         } else {
-
             println!("Calculate the number of iterations...");
         }
 
@@ -124,7 +124,10 @@ impl Simcraft {
         if !count_variations {
             // generate report
             self.report.compile();
+
+            let diff = Local::now() - now;
             println!("Permutation finished: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
+            println!("after: {}", ::fmt_duration(diff.num_seconds() as u64));
         }
         Ok(iterations)
     }

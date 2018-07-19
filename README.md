@@ -1,6 +1,6 @@
 # SimulationCraft Permut (Rust)
 
-Beta: 0.1.2
+Beta: 0.1.3
 
 ## Vorwort
 

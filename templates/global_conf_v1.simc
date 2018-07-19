@@ -7,7 +7,7 @@
 # Reports
 html="#[[var=report_html]]"
 json2="#[[var=report_json]]"
-threads=4
+#threads=4
 
 # General
 max_time=300
