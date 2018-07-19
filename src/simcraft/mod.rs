@@ -10,11 +10,12 @@ use configuration::Configuration;
 use std::fs::{File, create_dir_all};
 use std::io::{BufRead, BufReader};
 use std::result::{Result};
-use std::io::{Error};
-use std::process::{Command, Stdio};
+use std::io::{Error, ErrorKind};
+//use std::process::{Command, Stdio};
 use uuid::*;
 use indicatif::{ProgressBar, ProgressStyle};
 use chrono::{Local, Duration};
+use libc::{size_t, c_int};
 
 use item_map::ItemMap;
 use item::Item;
@@ -22,6 +23,24 @@ use slot::{Slot, ESlot};
 use template::Template;
 use configuration::{ReplacedEnchantment};
 use report::Generator;
+
+
+#[link(name = "simc")]
+extern {
+    fn simc_lib_entry_point(file: *const u8, len: size_t) -> c_int;
+}
+
+fn simc(file: &str) -> Result<i32, Error> {
+    let file = String::from(file);
+
+    unsafe {
+        let ret = simc_lib_entry_point(file.as_ptr(), file.len());
+        match ret {
+            0 => Ok(0),
+            _ => Err(Error::new(ErrorKind::Other, format!("simc result is not null ({}).", ret)))
+        }
+    }
+}
 
 
 pub struct Simcraft {
@@ -303,13 +322,18 @@ impl Simcraft {
         let stderr = format!("{}/{}_{}.log", &self.log_dir, "stderr", &parse_counter.to_string());
         let stderr = File::create(&stderr).unwrap();
 
+        // Test Branch with simc.exe compiled as static lib. So we use it directly.
+        println!("Execute simc()");
+        simc(&process_tpl).unwrap();
+
+/*
         let mut process = Command::new(&self.config.simcraft.executeable)
             .arg(process_tpl)
             .stdout(Stdio::from(stdout))
             .stderr(Stdio::from(stderr))
             .spawn().unwrap();
         process.wait().unwrap();
-
+*/
         // generate report
         self.report.push(&report_json, &report_html);
 

@@ -3,3 +3,4 @@
 **/*.rs.bk
 /*.simc
 config.json
+/.vscode
