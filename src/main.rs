@@ -26,6 +26,12 @@ use configuration::*;
 const VERSION: &str = "0.1.2";
 const AUTHOR: &str = "[DM]Origin";
 
+// This is the time in seconds in which one iteration
+// runs. On faster machines its about 12s to 15s. But on
+// slower one it could be of around 25s.
+// So I set this to 19s. I hope this is a god value :)
+const TIME_PER_ITER: u64 = 19;
+
 
 fn main() {
     // read application arguments
@@ -63,10 +69,9 @@ fn main() {
     simc.compute_item_list(item_list_file).unwrap();
     
     // calculate the number of iterations
-    // Approximately 15s per iteration
     let iterations = simc.permutation(true, 0).unwrap();
     println!("Your request generates {} iterations", iterations);
-    println!("This runs for approximalty: {}", fmt_duration(&Duration::seconds((iterations * 15) as i64)));
+    println!("This runs for approximalty: {}", fmt_duration(iterations * TIME_PER_ITER));
     println!("Do you want to continue? (y == yes / n == no)");
 
     loop {
@@ -88,7 +93,13 @@ fn main() {
 }
 
 
-fn fmt_duration(duration: &Duration) -> String {
-    format!("{} Days - {}:{}:{}", duration.num_days(), duration.num_hours(), 
-        duration.num_minutes(), duration.num_seconds())
+fn fmt_duration(duration: u64) -> String {
+    let duration = Duration::seconds(duration as i64);
+
+    let days = duration.num_days();
+    let hours = duration.num_hours() - duration.num_days() * 24;
+    let minutes = duration.num_minutes() - duration.num_hours() * 60;
+    let seconds = duration.num_seconds() - duration.num_minutes() * 60;
+
+    format!("{} Days - {:0>#2}:{:0>#2}:{:0>#2}", days, hours, minutes, seconds)
 }

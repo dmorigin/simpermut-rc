@@ -125,7 +125,7 @@ impl Generator {
         let store = &format!("{}/{}", self.report_dir, "report.html");
         Template::store(&store, &self.tpl_report.compile().unwrap()).unwrap();
 
-        println!("Permutation finished. Yout find your report here: {}", store);
+        println!("Report: {}", store);
     }
 
     fn _get_report_name(&self, report: &str) -> String {

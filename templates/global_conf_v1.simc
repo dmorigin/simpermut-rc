@@ -12,7 +12,7 @@ threads=4
 # General
 max_time=300
 vary_combat_length=0.2
-iterations=25000
+iterations=10000
 
 # Enemies (Patchwerk,LightMovement,HecticAddCleave)
 tmi_boss=T19M

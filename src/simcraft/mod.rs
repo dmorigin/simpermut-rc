@@ -86,27 +86,30 @@ impl Simcraft {
 
         // create stack.
         let mut stack: Vec<Item> = Vec::new();
-        let mut progressbar: ProgressBar = ProgressBar::new(iterations + 1);
+        let mut progressbar: ProgressBar = ProgressBar::new(iterations + 2);
+
+        // setup progress bar
+        progressbar.set_style(
+            ProgressStyle::default_bar()
+            .template("{bar:40.cyan/blue} {pos:>7}/{len:7} [{eta_precise}]")
+            .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ "));
 
         if !count_variations {
-            // setup progress bar
-            progressbar.set_style(
-                ProgressStyle::default_bar()
-                .template("{bar:40.cyan/blue} {pos:>7}/{len:7} [{eta_precise}]")
-                .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ "));
-
             println!("Start permutation with {} iterations", iterations);
             println!("You can find the outputs at: {}", self.output_dir);
             println!("Starts at: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
             println!("Finished approximatly at: {}",
-                (Local::now() + Duration::seconds((iterations * 15) as i64)).format("%d.%m.%Y - %H:%M:%S"));
+                (Local::now() + Duration::seconds((iterations * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
 
             // generate template
             let tpl: String = format!("{}/{}", self.config.template_dir, self.config.simcraft.template);
             self.template = Template::load(&tpl).unwrap();
         } else {
+
             println!("Calculate the number of iterations...");
         }
+
+        progressbar.inc(1);
 
         // begin permutation
         let iterations = self.permut_iteration_single(
