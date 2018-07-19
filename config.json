@@ -1,6 +1,5 @@
 
 {
-    "max_legendaries": 2,
     "output_dir": "output",
     "report_dir": "reports",
     "template_dir": "templates",

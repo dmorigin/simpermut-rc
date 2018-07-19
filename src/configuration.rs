@@ -47,7 +47,6 @@ pub struct Simcraft {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Configuration
 {
-    pub max_legendaries: i32,
     pub output_dir: String,
     pub report_dir: String,
     pub template_dir: String,
