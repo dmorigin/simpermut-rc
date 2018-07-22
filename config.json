@@ -6,7 +6,7 @@
     "log_dir": "logs",
 
     "simcraft": {
-        "best_of": 10,
+        "best_of": 20,
         "template": "dh.legion.simc",
         "process_template": "proc_{}.simc",
         "executeable": "D:/Development/World of Warcraft/simc-bfa/simc.exe",
@@ -47,12 +47,12 @@
                 "id": 5427
             },
             {
-                "slot": "finger",
-                "id": 5427
-            },
-            {
                 "slot": "back",
                 "id": 5435
+            },
+            {
+                "slot": "neck",
+                "id": 5437
             }
         ]
     },

@@ -235,11 +235,12 @@ impl Simcraft {
         let mut counter = 0;
         let mut has_ignores = false;
         let mut iteration_count1 = 0;
-        let mut iteration_count2 = 0;
 
         // slot finger1
         let slot1_items = self.items.get_slot(slot).unwrap();
         for slot1 in slot1_items.iter() {
+            let mut iteration_count2 = 0;
+
             // check limits
             if self.has_multiple_of_them(&stack) {
                 continue;
