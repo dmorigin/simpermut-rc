@@ -6,12 +6,17 @@
     "log_dir": "logs",
 
     "simcraft": {
-        "best_of": 50,
+        "best_of": 10,
         "template": "dh.legion.simc",
         "process_template": "proc_{}.simc",
         "executeable": "D:/Development/World of Warcraft/simc-bfa/simc.exe",
         "html": "html/simc_report_{}.html",
         "json": "json/simc_report_{}.json"
+    },
+
+    "statistic": {
+        "tolerance": 2.0,
+        "threshold": 15
     },
 
     "replaces": {
@@ -74,7 +79,8 @@
                 152626,
                 138854,
                 144249,
-                144259 
+                144259,
+                151798
             ]
         }
     ]

@@ -1,4 +1,6 @@
 # SimC Addon 1.10.1
+input="./templates/global_conf_v1.simc"
+
 
 html="data.simc.html"
 json2="data.simc.json"
@@ -39,3 +41,19 @@ off_hand=,id=127830
 #
 # Chaostheorie (265)
 # back=,id=151798,bonus_id=1811/3630
+#
+# Harnisch der erdrückenden Dunkelheit (240)
+# chest=,id=151980,bonus_id=3612/1502/3528
+#
+# Schwergewichtsgelenkbänder der Mo'arg (245)
+# wrist=,id=144485,bonus_id=3536/1555/3337
+#
+# Anhänger des wachsamen Auges (240)
+# neck=,id=137536,bonus_id=3536/1550/3337
+#
+# Gelaugte Ledergugel (235)
+# head=,id=134240,bonus_id=3536/1546/3337
+#
+# Treter des Hainverdunklers (240)
+# feet=,id=134429,bonus_id=3536/1550/3337
+#

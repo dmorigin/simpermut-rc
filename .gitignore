@@ -2,4 +2,5 @@
 /output
 **/*.rs.bk
 /*.simc
+/.vscode
 config.json

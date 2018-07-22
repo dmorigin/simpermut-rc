@@ -45,6 +45,12 @@ pub struct Simcraft {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Statistic {
+    pub tolerance: f32,
+    pub threshold: i32
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Configuration
 {
     pub output_dir: String,
@@ -53,7 +59,8 @@ pub struct Configuration
     pub log_dir: String,
     pub simcraft: Simcraft,
     pub replaces: Replacement,
-    pub limits: Vec<Limit>
+    pub limits: Vec<Limit>,
+    pub statistic: Statistic
 }
 
 

@@ -3,6 +3,7 @@ pub mod slot;
 pub mod item_map;
 pub mod item;
 pub mod report;
+pub mod statistic;
 
 
 use regex::Regex;
@@ -22,6 +23,7 @@ use slot::{Slot, ESlot};
 use template::Template;
 use configuration::{ReplacedEnchantment};
 use report::Generator;
+use statistic::Statistic;
 
 
 pub struct Simcraft {
@@ -32,7 +34,8 @@ pub struct Simcraft {
     report_dir: String,
     compile_dir: String,
     log_dir: String,
-    report: Generator
+    report: Generator,
+    statistic: Statistic
 }
 
 impl Simcraft {
@@ -62,8 +65,41 @@ impl Simcraft {
             report_dir: report_dir.clone(),
             compile_dir: compile_dir,
             log_dir: log_dir,
-            report: Generator::new(config, &report_dir)
+            report: Generator::new(config, &report_dir),
+            statistic: Statistic::new(config)
         }
+    }
+
+    pub fn calculate_iterations(&self) -> u64 {
+        self._calculate_iterations_at(&ESlot::Head, 0)
+    }
+
+    fn _calculate_iterations_at(&self, start_slot: &ESlot, skip: usize) -> u64 {
+        let mut slot = *start_slot;
+        let mut iterations = match self.items.get_slot(&slot) {
+            Some(l) => l.len() - skip,
+            None => 1
+        };
+
+        // step through all items
+        while let Some(s) = Simcraft::next_slot(&slot) {
+            if s == ESlot::Trinket || s == ESlot::Finger {
+                iterations *= match self.items.get_slot(&s) {
+                    Some(l) => ((l.len() * l.len()) - l.len()) / 2,
+                    None => 1
+                }
+            } else {
+                // normal iterations
+                iterations *= match self.items.get_slot(&s) {
+                    Some(l) => l.len(),
+                    None => 1
+                };
+            }
+
+            slot = s;
+        }
+
+        iterations as u64
     }
 
     pub fn compute_item_list(&mut self, file: &str) -> Result<bool, Error> {
@@ -82,7 +118,7 @@ impl Simcraft {
     /// This function start the whole permutation process. The process starts with
     /// the head slot. This is a single step permutation. Bevor this step, the
     /// configured template will be load.
-    pub fn permutation(&mut self, count_variations: bool, iterations: u64) -> Result<(u64), Error> {
+    pub fn permutation(&mut self, iterations: u64) -> Result<(u64), Error> {
 
         // create stack.
         let mut stack: Vec<Item> = Vec::new();
@@ -95,25 +131,20 @@ impl Simcraft {
             .template("{bar:40.cyan/blue} {pos:>7}/{len:7} [{eta_precise}]")
             .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ "));
 
-        if !count_variations {
-            println!("Start permutation with {} iterations", iterations);
-            println!("You can find the outputs at: {}", self.output_dir);
-            println!("Starts at: {}", now.format("%d.%m.%Y - %H:%M:%S"));
-            println!("Finished approximatly at: {}",
-                (now + Duration::seconds((iterations * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
+        println!("Start permutation with {} iterations", iterations);
+        println!("You can find the outputs at: {}", self.output_dir);
+        println!("Starts at: {}", now.format("%d.%m.%Y - %H:%M:%S"));
+        println!("Finished approximatly at: {}",
+            (now + Duration::seconds((iterations * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
 
-            // generate template
-            let tpl: String = format!("{}/{}", self.config.template_dir, self.config.simcraft.template);
-            self.template = Template::load(&tpl).unwrap();
-        } else {
-            println!("Calculate the number of iterations...");
-        }
+        // generate template
+        let tpl: String = format!("{}/{}", self.config.template_dir, self.config.simcraft.template);
+        self.template = Template::load(&tpl).unwrap();
 
         progressbar.inc(1);
 
         // begin permutation
         let iterations = self.permut_iteration_single(
-            count_variations,
             &mut progressbar,
             &mut stack,
             &ESlot::Head,
@@ -121,14 +152,13 @@ impl Simcraft {
 
         progressbar.finish();
 
-        if !count_variations {
-            // generate report
-            self.report.compile();
+        // generate report
+        self.report.compile();
 
-            let diff = Local::now() - now;
-            println!("Permutation finished: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
-            println!("after: {}", ::fmt_duration(diff.num_seconds() as u64));
-        }
+        let diff = Local::now() - now;
+        println!("Permutation finished: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
+        println!("after: {}", ::fmt_duration(diff.num_seconds() as u64));
+
         Ok(iterations)
     }
 
@@ -136,7 +166,6 @@ impl Simcraft {
     /// step through all items of a single slot. For every item of this slot another
     /// permutation method will be called.
     fn permut_iteration_single(&self, 
-        count_variations: bool,
         bar: &mut ProgressBar,
         stack: &mut Vec<Item>,
         slot: &ESlot,
@@ -144,10 +173,18 @@ impl Simcraft {
     {
         let mut parse_counter = parse_counter;
         let items = self.items.get_slot(slot).unwrap();
+        let mut has_ignores = false;
+        let mut count = 0;
         
         for item in items.iter() {
             // check limits
             if self.has_multiple_of_them(&stack) {
+                continue;
+            }
+
+            // skip?
+            if self.statistic.ignore(item) {
+                bar.inc(self._calculate_iterations_at(slot, count));
                 continue;
             }
 
@@ -157,15 +194,29 @@ impl Simcraft {
             // step into next iteration
             if let Some(next) = Simcraft::next_slot(slot) {
                 parse_counter = match next {
-                    ESlot::Finger => self.permut_iteration_double(count_variations, bar, stack, &next, parse_counter),
-                    ESlot::Trinket => self.permut_iteration_double(count_variations, bar, stack, &next, parse_counter),
-                    _ => self.permut_iteration_single(count_variations, bar, stack, &next, parse_counter)
+                    ESlot::Finger => self.permut_iteration_double(bar, stack, &next, parse_counter),
+                    ESlot::Trinket => self.permut_iteration_double(bar, stack, &next, parse_counter),
+                    _ => self.permut_iteration_single(bar, stack, &next, parse_counter)
                 };
             } else {
-                parse_counter = self.build_simc_file(count_variations, bar, stack, parse_counter);
+                parse_counter = self.build_simc_file(bar, stack, parse_counter);
+                has_ignores = self.statistic.has_ignores(stack);
             }
 
             stack.pop(); // remove item from stack
+
+            // prevent the call of this function to save a little performance
+            if has_ignores {
+                match self.statistic.has_ignores(stack) {
+                    true => break,
+                    false => {
+                        bar.inc(self._calculate_iterations_at(slot, count));
+                        has_ignores = false;
+                    }
+                }
+            }
+
+            count += 1;
         }
 
         return parse_counter;
@@ -175,7 +226,6 @@ impl Simcraft {
     /// that this method steps through all items of a single slot twice. This is needed
     /// because that rings and trinkets has two slots.
     fn permut_iteration_double(&self,
-        count_variations: bool,
         bar: &mut ProgressBar,
         stack: &mut Vec<Item>,
         slot: &ESlot,
@@ -183,12 +233,21 @@ impl Simcraft {
     {
         let mut parse_counter = parse_counter;
         let mut counter = 0;
+        let mut has_ignores = false;
+        let mut iteration_count1 = 0;
+        let mut iteration_count2 = 0;
 
         // slot finger1
         let slot1_items = self.items.get_slot(slot).unwrap();
         for slot1 in slot1_items.iter() {
             // check limits
             if self.has_multiple_of_them(&stack) {
+                continue;
+            }
+
+            // skip?
+            if self.statistic.ignore(slot1) {
+                bar.inc(self._calculate_iterations_at(slot, iteration_count1));
                 continue;
             }
 
@@ -210,6 +269,12 @@ impl Simcraft {
                     continue;
                 }
 
+                // skip?
+                if self.statistic.ignore(slot2) {
+                    bar.inc(self._calculate_iterations_at(slot, iteration_count2));
+                    continue;
+                }
+
                 // add my own one
                 let mut item = slot2.clone();
                 item.slot = Slot::get_real_slot(&slot2.slot, 2).unwrap();
@@ -218,37 +283,55 @@ impl Simcraft {
                 // step into next iteration
                 if let Some(next) = Simcraft::next_slot(slot) {
                     parse_counter = match next {
-                        ESlot::Finger => self.permut_iteration_double(count_variations, bar, stack, &next, parse_counter),
-                        ESlot::Trinket => self.permut_iteration_double(count_variations, bar, stack, &next, parse_counter),
-                        _ => self.permut_iteration_single(count_variations, bar, stack, &next, parse_counter)
+                        ESlot::Finger => self.permut_iteration_double(bar, stack, &next, parse_counter),
+                        ESlot::Trinket => self.permut_iteration_double(bar, stack, &next, parse_counter),
+                        _ => self.permut_iteration_single(bar, stack, &next, parse_counter)
                     };
                 } else {
-                    parse_counter = self.build_simc_file(count_variations, bar, stack, parse_counter);
+                    parse_counter = self.build_simc_file(bar, stack, parse_counter);
+                    has_ignores = self.statistic.has_ignores(stack);
                 }
 
                 stack.pop(); // remove item from stack
+                if has_ignores {
+                    match self.statistic.has_ignores(stack) {
+                        true => break,
+                        false => { 
+                            bar.inc(self._calculate_iterations_at(slot, iteration_count2));
+                            has_ignores = false;
+                        }
+                    }
+                }
+
+                iteration_count2 += 1;
             }
 
             stack.pop(); // remove item from stack
             counter += 1; // increase the counter to skip items
+
+            if has_ignores {
+                match self.statistic.has_ignores(stack) {
+                    true => break,
+                    false => { 
+                        bar.inc(self._calculate_iterations_at(slot, iteration_count1));
+                        has_ignores = false;
+                    }
+                }
+            }
+
+            iteration_count1 += 1;
         }
 
         return parse_counter;
     }
 
     fn build_simc_file(&self, 
-        count_variations: bool,
         bar: &mut ProgressBar,
         stack: &Vec<Item>,
         parse_counter: u64) -> u64
     {
         // setup template
         let parse_counter = parse_counter + 1;
-
-        // only count the number of variations
-        if count_variations {
-            return parse_counter;
-        }
 
         // build the item list
         let mut item_list: String = String::new();
@@ -311,7 +394,8 @@ impl Simcraft {
         process.wait().unwrap();
 
         // generate report
-        self.report.push(&report_json, &report_html);
+        let tuple = self.report.push(&report_json, &report_html);
+        self.statistic.update(stack, tuple.1, tuple.2, tuple.3);
 
         bar.inc(1);
         return parse_counter;

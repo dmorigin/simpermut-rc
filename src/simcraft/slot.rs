@@ -29,6 +29,7 @@ pub enum ESlot
     OffHand
 }
 
+
 #[derive(PartialOrd, Hash, Clone, Debug)]
 pub struct Slot
 {
@@ -54,7 +55,6 @@ impl PartialEq for Slot {
 
 impl Eq for Slot {
 }
-
 
 
 impl Slot {

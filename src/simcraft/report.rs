@@ -42,10 +42,15 @@ impl Generator {
         }
     }
 
-    pub fn push(&self, json_report: &str, html_report: &str) {
+    /// Insert a report from simc.
+    /// 
+    /// Returns a tuple with the following values
+    /// (at: usize, dps: f32, min_dps: f32, max_dps: f32)
+    pub fn push(&self, json_report: &str, html_report: &str) -> (usize, f32, f32, f32) {
         // read json report
         let fin = File::open(&json_report).unwrap();
         let json: Value = read_json(&fin).unwrap();
+        let mut at: usize = 0;
 
         //println!("Push a new report: {}", &html_report);
 
@@ -63,7 +68,6 @@ impl Generator {
             });
         } else {
             // borrow checker sucks :/
-            let mut at: usize = 0;
             for i in self.reports.borrow().iter() {
                 if dps > i.dps {
                     break;
@@ -72,16 +76,21 @@ impl Generator {
                 at += 1;
             }
 
-            self.reports.borrow_mut().insert(at, Report {
-                html: String::from(html_report),
-                dps: dps
-            });
+            if at < self.config.simcraft.best_of {
+                self.reports.borrow_mut().insert(at, Report {
+                    html: String::from(html_report),
+                    dps: dps
+                });
+            }
 
             // limit the number of reports
             if self.reports.borrow().len() > self.config.simcraft.best_of {
                 self.reports.borrow_mut().pop();
             }
         }
+
+        let range = self.min_max_dps();
+        (at, dps, range.0, range.1)
     }
 
     pub fn compile(&self) {
@@ -91,27 +100,17 @@ impl Generator {
 
         println!("Try to compile the report");
 
-        // max dps
-        let max_dps: f32 = match self.reports.borrow().first() {
-            Some(v) => v.dps,
-            None => 0.0
-        };
+        let range = self.min_max_dps();
 
-        // min dps
-        let min_dps: f32 = match self.reports.borrow().last() {
-            Some(v) => v.dps,
-            None => 0.0
-        };
-
-        println!("Min DPS: {} / Max DPS: {}", min_dps, max_dps);
-        self.tpl_report.set_var("min_dps", &min_dps.to_string()).unwrap();
-        self.tpl_report.set_var("max_dps", &max_dps.to_string()).unwrap();
+        println!("Min DPS: {} / Max DPS: {}", range.0, range.1);
+        self.tpl_report.set_var("min_dps", &range.0.to_string()).unwrap();
+        self.tpl_report.set_var("max_dps", &range.1.to_string()).unwrap();
 
         // list all reports
         for r in self.reports.borrow().iter() {
             // fill template
             self.tpl_list_entry.set_var("dps", &(r.dps.round() as i32).to_string()).unwrap();
-            self.tpl_list_entry.set_var("val_now", &(((r.dps / max_dps) * 100.0).round() as i32).to_string()).unwrap();
+            self.tpl_list_entry.set_var("val_now", &(((r.dps / range.1) * 100.0).round() as i32).to_string()).unwrap();
             self.tpl_list_entry.set_var("html_report_file", &self._get_report_file(&r.html)).unwrap();
             self.tpl_list_entry.set_var("html_report_name", &self._get_report_name(&r.html)).unwrap();
 
@@ -126,6 +125,22 @@ impl Generator {
         Template::store(&store, &self.tpl_report.compile().unwrap()).unwrap();
 
         println!("Report: {}", store);
+    }
+
+    pub fn min_max_dps(&self) -> (f32, f32) {
+        // max dps
+        let max_dps: f32 = match self.reports.borrow().first() {
+            Some(v) => v.dps,
+            None => 0.0
+        };
+
+        // min dps
+        let min_dps: f32 = match self.reports.borrow().last() {
+            Some(v) => v.dps,
+            None => 0.0
+        };
+
+        (min_dps, max_dps)
     }
 
     fn _get_report_name(&self, report: &str) -> String {

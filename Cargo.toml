@@ -1,5 +1,5 @@
 [package]
-name = "SimPermut"
+name = "sim_permut"
 version = "0.1.0"
 authors = ["dmorigin <stephan@kirfel-koeln.de>"]
 

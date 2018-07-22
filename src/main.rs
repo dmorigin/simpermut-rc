@@ -69,7 +69,8 @@ fn main() {
     simc.compute_item_list(item_list_file).unwrap();
     
     // calculate the number of iterations
-    let iterations = simc.permutation(true, 0).unwrap();
+    println!("Calculate the number of iterations...");
+    let iterations = simc.calculate_iterations();
     println!("Your request generates {} iterations", iterations);
     println!("This runs for approximalty: {}", fmt_duration(iterations * TIME_PER_ITER));
     println!("Do you want to continue? (y == yes / n == no)");
@@ -89,7 +90,7 @@ fn main() {
     }
 
     // start permutation
-    simc.permutation(false, iterations).unwrap();
+    simc.permutation(iterations).unwrap();
 }
 
 
