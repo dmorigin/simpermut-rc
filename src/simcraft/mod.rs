@@ -174,7 +174,7 @@ impl Simcraft {
         let mut parse_counter = parse_counter;
         let items = self.items.get_slot(slot).unwrap();
         let mut has_ignores = false;
-        let mut count = 0;
+        let mut iteration_count = 0;
         
         for item in items.iter() {
             // check limits
@@ -182,9 +182,11 @@ impl Simcraft {
                 continue;
             }
 
+            iteration_count += 1;
+
             // skip?
             if self.statistic.ignore(item) {
-                bar.inc(self._calculate_iterations_at(slot, count));
+                bar.inc(self._calculate_iterations_at(slot, iteration_count));
                 continue;
             }
 
@@ -210,13 +212,11 @@ impl Simcraft {
                 match self.statistic.has_ignores(stack) {
                     true => break,
                     false => {
-                        bar.inc(self._calculate_iterations_at(slot, count));
+                        bar.inc(self._calculate_iterations_at(slot, iteration_count));
                         has_ignores = false;
                     }
                 }
             }
-
-            count += 1;
         }
 
         return parse_counter;
@@ -239,12 +239,12 @@ impl Simcraft {
         // slot finger1
         let slot1_items = self.items.get_slot(slot).unwrap();
         for slot1 in slot1_items.iter() {
-            let mut iteration_count2 = 0;
-
             // check limits
             if self.has_multiple_of_them(&stack) {
                 continue;
             }
+
+            iteration_count1 += 1;
 
             // skip?
             if self.statistic.ignore(slot1) {
@@ -272,7 +272,7 @@ impl Simcraft {
 
                 // skip?
                 if self.statistic.ignore(slot2) {
-                    bar.inc(self._calculate_iterations_at(slot, iteration_count2));
+                    bar.inc(self._calculate_iterations_at(slot, iteration_count1));
                     continue;
                 }
 
@@ -298,13 +298,11 @@ impl Simcraft {
                     match self.statistic.has_ignores(stack) {
                         true => break,
                         false => { 
-                            bar.inc(self._calculate_iterations_at(slot, iteration_count2));
+                            bar.inc(self._calculate_iterations_at(slot, iteration_count1));
                             has_ignores = false;
                         }
                     }
                 }
-
-                iteration_count2 += 1;
             }
 
             stack.pop(); // remove item from stack
@@ -319,8 +317,6 @@ impl Simcraft {
                     }
                 }
             }
-
-            iteration_count1 += 1;
         }
 
         return parse_counter;
