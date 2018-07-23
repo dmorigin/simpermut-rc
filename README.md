@@ -73,3 +73,8 @@ mehrere tausend Iterationen ausgeführt. Wobei jede Iteration, je nach Hardware 
 15s bis 30s dauern kann.
 Es sollte daher darauf geachtet werden das ihr auf keinen Fall simc.exe dazu veranlasst die 
 Skalierungsfaktoren aus zu rechnen. Setzt also unbedingt: calculate_scale_factors=0
+
+## Pre Compiled
+
+Windows x64 Version 0.1.4
+https://www.gamers-shell.de/wp-content/uploads/2018/07/sim_permut_0.1.4_winx64.zip
