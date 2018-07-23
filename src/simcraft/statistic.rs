@@ -42,7 +42,7 @@ impl Statistic {
         }
     }
 
-    pub fn update(&self, stack: &Vec<Item>, dps: f32, min_dps: f32, max_dps: f32) {
+    pub fn update(&self, stack: &[Item], dps: f32, min_dps: f32, max_dps: f32) {
         for i in stack.iter() {
             self._add_new_one(i);
         }
@@ -53,7 +53,7 @@ impl Statistic {
         }
     }
 
-    pub fn has_ignores(&self, stack: &Vec<Item>) -> bool {
+    pub fn has_ignores(&self, stack: &[Item]) -> bool {
         for i in stack.iter() {
             for d in self.items.borrow().iter() {
                 if i.id == d.item_id && d.rating <= self.threshold {

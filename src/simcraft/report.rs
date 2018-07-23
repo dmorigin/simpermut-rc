@@ -64,7 +64,7 @@ impl Generator {
         if self.reports.borrow().is_empty() {
             self.reports.borrow_mut().push(Report {
                 html: String::from(html_report),
-                dps: dps
+                dps
             });
         } else {
             // borrow checker sucks :/
@@ -79,7 +79,7 @@ impl Generator {
             if at < self.config.simcraft.best_of {
                 self.reports.borrow_mut().insert(at, Report {
                     html: String::from(html_report),
-                    dps: dps
+                    dps
                 });
             }
 
@@ -144,7 +144,7 @@ impl Generator {
     }
 
     fn _get_report_name(&self, report: &str) -> String {
-        if let Some(p) = String::from(report).rfind("/") {
+        if let Some(p) = String::from(report).rfind('/') {
             return String::from(&report[p..]);
         }
 

@@ -31,13 +31,13 @@ impl Item {
 
     pub fn from_replaced_item(other: &ReplacedItem) -> Item {
         Item {
-            id: other.id.clone(),
+            id: other.id,
             slot: Slot::from_str(&other.slot).unwrap(),
             name: other.name.clone(),
             bonus_id: other.bonus_id.clone(),
             gem_id: other.gem_id.clone(),
             relic_id: other.relic_id.clone(),
-            enchant_id: other.enchant_id.clone()
+            enchant_id: other.enchant_id
         }
     }
 }

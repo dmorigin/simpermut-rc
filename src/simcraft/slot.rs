@@ -30,7 +30,7 @@ pub enum ESlot
 }
 
 
-#[derive(PartialOrd, Hash, Clone, Debug)]
+#[derive(PartialOrd, Clone, Debug)]
 pub struct Slot
 {
     pub slot: ESlot,
@@ -67,7 +67,7 @@ impl Slot {
 
     pub fn from_str(name: &str) -> Result<Slot, Error> {
         let eslot: ESlot = match Slot::_get_eslot(name) {
-            Ok(s) => Slot::fix_slot(&s),
+            Ok(s) => Slot::fix_slot(s),
             Err(err) => {
                 return Err(Error::new(ErrorKind::InvalidInput, err));
             }
@@ -75,17 +75,17 @@ impl Slot {
 
         Ok(Slot {
             slot: eslot,
-            name: Slot::_get_name(&eslot)
+            name: Slot::_get_name(eslot)
         })
     }
 
-    pub fn fix_slot(eslot: &ESlot) -> ESlot {
+    pub fn fix_slot(eslot: ESlot) -> ESlot {
         match eslot {
             ESlot::Finger1 => ESlot::Finger,
             ESlot::Finger2 => ESlot::Finger,
             ESlot::Trinket1 => ESlot::Trinket,
             ESlot::Trinket2 => ESlot::Trinket,
-            _ => eslot.clone()
+            _ => eslot
         }
     }
 
@@ -105,12 +105,12 @@ impl Slot {
                     _ => { return Err(Error::new(ErrorKind::InvalidInput, "Value of part is wrong")); }
                 }
             },
-            _ => slot.slot.clone()
+            _ => slot.slot
         };
 
         Ok(Slot {
             slot: eslot,
-            name: Slot::_get_name(&eslot)
+            name: Slot::_get_name(eslot)
         })
     }
 
@@ -138,7 +138,7 @@ impl Slot {
         }
     }
 
-    fn _get_name(slot: &ESlot) -> String {
+    fn _get_name(slot: ESlot) -> String {
         match slot {
             ESlot::Head => String::from("head"),
             ESlot::Neck => String::from("neck"),

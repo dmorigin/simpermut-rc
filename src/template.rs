@@ -55,7 +55,7 @@ impl Template {
         match File::create(file) {
             Ok(mut f) => {
                 // write data to disc
-                f.write(String::from(tpl).as_bytes()).unwrap();
+                f.write_all(String::from(tpl).as_bytes()).unwrap();
                 Ok(())
             },
             Err(err) => Err(err)
@@ -98,7 +98,7 @@ impl Template {
         let mut tpl: String = self.data.clone();
 
         // insert imports
-        for import in self.imports.iter() {
+        for import in &self.imports {
             tpl = tpl.replace(&format!("#[[import={}]]", import.file), &import._compile().unwrap());
         }
 
@@ -117,7 +117,7 @@ impl Template {
         let mut tpl: String = self.data.clone();
 
         // insert imports
-        for import in self.imports.iter() {
+        for import in &self.imports {
             tpl = tpl.replace(&format!("#[[import={}]]", import.file), &import._compile().unwrap());
         }
 
@@ -132,7 +132,7 @@ impl Template {
         }
 
         // aquire variables from imported templates
-        for tpl in self.imports.iter() {
+        for tpl in &self.imports {
                 self.variables.borrow_mut().extend(tpl.variables.borrow_mut().clone());
         }
     }

@@ -49,7 +49,7 @@ impl ItemMap {
 
     pub fn push(&mut self, slot: &Slot, item: &Item) {
         // search for existiing one
-        for iter in self.list.iter_mut() {
+        for iter in &mut self.list {
             if iter.slot == *slot {
                 iter.items.push(item.clone());
                 return;
@@ -62,9 +62,9 @@ impl ItemMap {
         self.list.push(entry);
     }
 
-    pub fn get_slot(&self, pattern: &ESlot) -> Option<&Vec<Item>> {
-        for iter in self.list.iter() {
-            if iter.slot.slot == *pattern {
+    pub fn get_slot(&self, pattern: ESlot) -> Option<&Vec<Item>> {
+        for iter in &self.list {
+            if iter.slot.slot == pattern {
                 return Some(&iter.items);
             }
         }
