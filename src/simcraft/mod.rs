@@ -66,12 +66,18 @@ impl Simcraft {
             compile_dir,
             log_dir,
             report: Generator::new(config, &report_dir),
-            statistic: Statistic::new(config)
+            statistic: Statistic::new(config),
         }
     }
 
-    pub fn calculate_iterations(&self) -> u64 {
-        self._calculate_iterations_at(ESlot::Head, 0)
+    // returns a tuple.
+    // .0 => absolut value
+    // .1 => approximate value
+    pub fn calculate_iterations(&self) -> (u64, u64) {
+        let iterations = self._calculate_iterations_at(ESlot::Head, 0) as f64;
+        let approximate = 30f32 / self.config.statistic.tolerance; // need to be fixed!
+
+        (iterations as u64, approximate as u64)
     }
 
     fn _calculate_iterations_at(&self, start_slot: ESlot, skip: usize) -> u64 {
@@ -118,11 +124,11 @@ impl Simcraft {
     /// This function start the whole permutation process. The process starts with
     /// the head slot. This is a single step permutation. Bevor this step, the
     /// configured template will be load.
-    pub fn permutation(&mut self, iterations: u64) -> Result<(u64), Error> {
+    pub fn permutation(&mut self, iterations: (u64, u64)) -> Result<(u64), Error> {
 
         // create stack.
         let mut stack: Vec<Item> = Vec::new();
-        let mut progress_bar: ProgressBar = ProgressBar::new(iterations + 2);
+        let mut progress_bar: ProgressBar = ProgressBar::new(iterations.0 + 2);
         let now = Local::now();
 
         // setup progress bar
@@ -131,11 +137,11 @@ impl Simcraft {
             .template("{bar:40.cyan/blue} {pos:>7}/{len:7} [{eta_precise}]")
             .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ "));
 
-        println!("Start permutation with {} iterations", iterations);
+        println!("Start permutation with approximatly {} iterations", iterations.1);
         println!("You can find the outputs at: {}", self.output_dir);
         println!("Starts at: {}", now.format("%d.%m.%Y - %H:%M:%S"));
         println!("Finished approximatly at: {}",
-            (now + Duration::seconds((iterations * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
+            (now + Duration::seconds((iterations.1 * ::TIME_PER_ITER) as i64)).format("%d.%m.%Y - %H:%M:%S"));
 
         // generate template
         let tpl: String = format!("{}/{}", self.config.template_dir, self.config.simcraft.template);
@@ -159,7 +165,7 @@ impl Simcraft {
         println!("Permutation finished: {}", Local::now().format("%d.%m.%Y - %H:%M:%S"));
         println!("after: {}", ::fmt_duration(diff.num_seconds() as u64));
 
-        Ok(iterations)
+        Ok(iterations.0)
     }
 
     /// This method process a single iteration of the permutation. This means it will
@@ -169,12 +175,18 @@ impl Simcraft {
         progress_bar: &mut ProgressBar,
         stack: &mut Vec<Item>,
         slot: ESlot,
-        parse_counter: u64) -> u64
+        parse_counter: u64) -> (u64, bool, u64)
     {
         let mut parse_counter = parse_counter;
-        let items = self.items.get_slot(slot).unwrap();
-        let mut has_ignores = false;
         let mut iteration_count = 0;
+
+        // off_hand could be empty. So we need to jump over
+        let items = match self.items.get_slot(slot) {
+            Some(i) => i,
+            None => {
+                return self.handle_iteration_step(progress_bar, stack, slot, parse_counter);
+            }
+        };
         
         for item in items {
             // check limits
@@ -194,32 +206,23 @@ impl Simcraft {
             stack.push(item.clone());
 
             // step into next iteration
-            if let Some(next) = Simcraft::next_slot(slot) {
-                parse_counter = match next {
-                    ESlot::Finger => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
-                    ESlot::Trinket => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
-                    _ => self.permut_iteration_single(progress_bar, stack, next, parse_counter)
-                };
-            } else {
-                parse_counter = self.build_simc_file(progress_bar, stack, parse_counter);
-                has_ignores = self.statistic.has_ignores(stack);
-            }
+            let tuple = self.handle_iteration_step(progress_bar, stack, slot, parse_counter);
+            parse_counter = tuple.0;
 
             stack.pop(); // remove item from stack
 
-            // prevent the call of this function to save a little performance
-            if has_ignores {
-                match self.statistic.has_ignores(stack) {
-                    true => break,
-                    false => {
-                        progress_bar.inc(self._calculate_iterations_at(slot, iteration_count));
-                        has_ignores = false;
-                    }
+            // We have some items to skip. So we need to check if this item was se last one
+            // that is removed from the stack.
+            if tuple.1 {
+                if self.statistic.has_ignores(stack) {
+                    return (parse_counter, true, self._calculate_iterations_at(slot, iteration_count) - tuple.2);
+                } else {
+                    progress_bar.inc(self._calculate_iterations_at(slot, iteration_count) - tuple.2);
                 }
             }
         }
 
-        parse_counter
+        (parse_counter, false, 0)
     }
 
     /// This method does generaly the same as Simcraft::permut_iteration_single. Except 
@@ -229,12 +232,13 @@ impl Simcraft {
         progress_bar: &mut ProgressBar,
         stack: &mut Vec<Item>,
         slot: ESlot,
-        parse_counter: u64) -> u64
+        parse_counter: u64) -> (u64, bool, u64)
     {
         let mut parse_counter = parse_counter;
         let mut counter = 0;
         let mut has_ignores = false;
         let mut iteration_count1 = 0;
+        let mut skipped = 0u64;
 
         // slot finger1
         let slot1_items = self.items.get_slot(slot).unwrap();
@@ -282,25 +286,19 @@ impl Simcraft {
                 stack.push(item);
 
                 // step into next iteration
-                if let Some(next) = Simcraft::next_slot(slot) {
-                    parse_counter = match next {
-                        ESlot::Finger => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
-                        ESlot::Trinket => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
-                        _ => self.permut_iteration_single(progress_bar, stack, next, parse_counter)
-                    };
-                } else {
-                    parse_counter = self.build_simc_file(progress_bar, stack, parse_counter);
-                    has_ignores = self.statistic.has_ignores(stack);
-                }
+                let tuple = self.handle_iteration_step(progress_bar, stack, slot, parse_counter);
+                parse_counter = tuple.0;
+                skipped = tuple.2;
 
                 stack.pop(); // remove item from stack
-                if has_ignores {
-                    match self.statistic.has_ignores(stack) {
-                        true => break,
-                        false => { 
-                            progress_bar.inc(self._calculate_iterations_at(slot, iteration_count1));
-                            has_ignores = false;
-                        }
+
+                if tuple.1 {
+                    if self.statistic.has_ignores(stack) {
+                        has_ignores = true;
+                        break;
+                    } else {
+                        progress_bar.inc(self._calculate_iterations_at(slot, iteration_count1) - tuple.2);
+                        has_ignores = false;
                     }
                 }
             }
@@ -309,23 +307,22 @@ impl Simcraft {
             counter += 1; // increase the counter to skip items
 
             if has_ignores {
-                match self.statistic.has_ignores(stack) {
-                    true => break,
-                    false => { 
-                        progress_bar.inc(self._calculate_iterations_at(slot, iteration_count1));
-                        has_ignores = false;
-                    }
+                if self.statistic.has_ignores(stack) {
+                    return (parse_counter, true, self._calculate_iterations_at(slot, iteration_count1) - skipped);
+                } else {
+                    progress_bar.inc(self._calculate_iterations_at(slot, iteration_count1) - skipped);
+                    has_ignores = false;
                 }
             }
         }
 
-        parse_counter
+        (parse_counter, false, 0)
     }
 
     fn build_simc_file(&self, 
         progress_bar: &mut ProgressBar,
         stack: &Vec<Item>,
-        parse_counter: u64) -> u64
+        parse_counter: u64) -> (u64, bool, u64)
     {
         // setup template
         let parse_counter = parse_counter + 1;
@@ -395,7 +392,7 @@ impl Simcraft {
         self.statistic.update(stack, tuple.1, tuple.2, tuple.3);
 
         progress_bar.inc(1);
-        parse_counter
+        (parse_counter, self.statistic.has_ignores(stack), 0)
     }
 
     /// Search for item declarations
@@ -427,6 +424,13 @@ impl Simcraft {
                     let regex_ids = Regex::new("(id|gem_id|bonus_id|relic_id|enchant_id)=([\\d/:]+)")
                         .unwrap();
                     
+                    /*
+                    // specify the spec
+                    let regex_spec = Regex::new("^spec=(.*)$").unwrap();
+                    if let Some(spec) = regex_spec.captures(&line.trim()) {
+                        self.spec = Spec::from_spec(&spec[0]);
+                    }
+                    */
                     // find something
                     for cap_item in regex_item.captures_iter(&line.trim()) {
                         //println!("items: {:?}", cap_item);
@@ -475,6 +479,26 @@ impl Simcraft {
                 Err(_) => break
             }
         }
+    }
+
+    fn handle_iteration_step(
+        &self,
+        progress_bar: &mut ProgressBar,
+        stack: &mut Vec<Item>,
+        slot: ESlot,
+        parse_counter: u64
+    ) -> (u64, bool, u64) {
+        if let Some(next) = Simcraft::next_slot(slot) {
+            let tuple = match next {
+                ESlot::Finger => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
+                ESlot::Trinket => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
+                _ => self.permut_iteration_single(progress_bar, stack, next, parse_counter)
+            };
+
+            return tuple;
+        }
+
+        self.build_simc_file(progress_bar, stack, parse_counter)
     }
 
     fn extract_path(path: &str) -> String {

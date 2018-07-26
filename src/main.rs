@@ -71,8 +71,8 @@ fn main() {
     // calculate the number of iterations
     println!("Calculate the number of iterations...");
     let iterations = simc.calculate_iterations();
-    println!("Your request generates {} iterations", iterations);
-    println!("This runs for approximalty: {}", fmt_duration(iterations * TIME_PER_ITER));
+    println!("Your request generates absolute {} iterations", iterations.0);
+    println!("This runs for approximalty: {}", fmt_duration(iterations.1 * TIME_PER_ITER));
     println!("Do you want to continue? (y == yes / n == no)");
 
     loop {
