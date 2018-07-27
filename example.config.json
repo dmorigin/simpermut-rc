@@ -11,7 +11,9 @@
         "process_template": "proc_{}.simc",
         "executeable": "/simulationcraft/simc.exe",
         "html": "html/simc_report_{}.html",
-        "json": "json/simc_report_{}.json"
+        "json": "json/simc_report_{}.json",
+        "override_spec": true,
+        "override_talents": true
     },
 
     "statistic": {
