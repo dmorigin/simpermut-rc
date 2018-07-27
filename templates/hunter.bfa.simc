@@ -8,8 +8,8 @@ region=eu
 server=alleria
 role=attack
 professions=alchemy=80/engineering=24
-talents=3312211
-spec=beast_mastery
+talents=#[[var=talents]]
+spec=#[[var=spec]]
 #artifact=56:0:0:0:0:1095:4:1636:1:882:1:1336:1:1520:15:881:1:880:1:879:1:878:1:1368:1:1519:1:877:1:876:1:875:4:874:4:873:4:872:4:871:4:870:4:869:4:868:4:1518:1:1517:4
 #crucible=0/0/0
 

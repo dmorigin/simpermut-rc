@@ -41,7 +41,9 @@ pub struct Simcraft {
     pub process_template: String,
     pub executeable: String,
     pub html: String,
-    pub json: String
+    pub json: String,
+    pub override_spec: bool,
+    pub override_talents: bool
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

@@ -35,7 +35,9 @@ pub struct Simcraft {
     compile_dir: String,
     log_dir: String,
     report: Generator,
-    statistic: Statistic
+    statistic: Statistic,
+    spec: String,
+    talents: String
 }
 
 impl Simcraft {
@@ -67,6 +69,8 @@ impl Simcraft {
             log_dir,
             report: Generator::new(config, &report_dir),
             statistic: Statistic::new(config),
+            spec: String::new(),
+            talents: String::new()
         }
     }
 
@@ -106,6 +110,14 @@ impl Simcraft {
         }
 
         iterations as u64
+    }
+
+    fn _skipped_iterations(&self, start_slot: ESlot, skip: usize, offset: u64) -> u64 {
+        let calculated = self._calculate_iterations_at(start_slot, skip);
+        match calculated > offset {
+            true => calculated - offset,
+            false => 0
+        }
     }
 
     pub fn compute_item_list(&mut self, file: &str) -> Result<bool, Error> {
@@ -215,9 +227,9 @@ impl Simcraft {
             // that is removed from the stack.
             if tuple.1 {
                 if self.statistic.has_ignores(stack) {
-                    return (parse_counter, true, self._calculate_iterations_at(slot, iteration_count) - tuple.2);
+                    return (parse_counter, true, self._skipped_iterations(slot, iteration_count, tuple.2));
                 } else {
-                    progress_bar.inc(self._calculate_iterations_at(slot, iteration_count) - tuple.2);
+                    self.set_progressbar_inc(progress_bar, slot, iteration_count, tuple.2);
                 }
             }
         }
@@ -297,7 +309,7 @@ impl Simcraft {
                         has_ignores = true;
                         break;
                     } else {
-                        progress_bar.inc(self._calculate_iterations_at(slot, iteration_count1) - tuple.2);
+                        self.set_progressbar_inc(progress_bar, slot, iteration_count1, tuple.2);
                         has_ignores = false;
                     }
                 }
@@ -308,9 +320,9 @@ impl Simcraft {
 
             if has_ignores {
                 if self.statistic.has_ignores(stack) {
-                    return (parse_counter, true, self._calculate_iterations_at(slot, iteration_count1) - skipped);
+                    return (parse_counter, true, self._skipped_iterations(slot, iteration_count1, skipped));
                 } else {
-                    progress_bar.inc(self._calculate_iterations_at(slot, iteration_count1) - skipped);
+                    self.set_progressbar_inc(progress_bar, slot, iteration_count1, skipped);
                     has_ignores = false;
                 }
             }
@@ -364,6 +376,14 @@ impl Simcraft {
 
         // setup list of all items
         self.template.set_var("item_list", &item_list).unwrap();
+
+        if self.template.var_exist("spec") && self.config.simcraft.override_spec {
+            self.template.set_var("spec", &self.spec).unwrap();
+        }
+
+        if self.template.var_exist("talents") && self.config.simcraft.override_talents {
+            self.template.set_var("talents", &self.talents).unwrap();
+        }
 
         // compile template
         let process_tpl = format!("{}/{}", &self.compile_dir,
@@ -419,22 +439,27 @@ impl Simcraft {
             // [head|shoulder|...]=[string],id=123,...
             match line {
                 Ok(line) => {
+                    let line = line.trim();
+
+                    // read spec from simc
+                    let regex_spec = Regex::new("^spec=(.*)$").unwrap();
+                    if let Some(spec) = regex_spec.captures(&line) {
+                        self.spec = String::from(&spec[1]);
+                    }
+
+                    // read talents from simc
+                    let regex_talents = Regex::new("^talents=(.*)$").unwrap();
+                    if let Some(talents) = regex_talents.captures(&line) {
+                        self.talents = String::from(&talents[1]);
+                    }
+
                     let regex_item = Regex::new("(head|neck|shoulder|back|chest|wrist|waist|hands|legs|feet|finger1|finger2|trinket1|trinket2|main_hand|off_hand)=([a-zA-Z0-9]*),(.*)")
                         .unwrap();
                     let regex_ids = Regex::new("(id|gem_id|bonus_id|relic_id|enchant_id)=([\\d/:]+)")
                         .unwrap();
-                    
-                    /*
-                    // specify the spec
-                    let regex_spec = Regex::new("^spec=(.*)$").unwrap();
-                    if let Some(spec) = regex_spec.captures(&line.trim()) {
-                        self.spec = Spec::from_spec(&spec[0]);
-                    }
-                    */
-                    // find something
-                    for cap_item in regex_item.captures_iter(&line.trim()) {
-                        //println!("items: {:?}", cap_item);
 
+                    // find something
+                    for cap_item in regex_item.captures_iter(&line) {
                         // save slot
                         let slot = match Slot::from_str(&cap_item[1]) {
                             Ok(slot) => slot,
@@ -459,8 +484,6 @@ impl Simcraft {
 
                         // extract id's
                         for cap_ids in regex_ids.captures_iter(&cap_item[3]) {
-                            //println!("ids: {:?}", cap_ids);
-
                             match &cap_ids[1] {
                                 "id" => item.id = String::from(&cap_ids[2]).parse::<u32>().unwrap(),
                                 "gem_id" => item.gem_id = String::from(&cap_ids[2]),
@@ -574,5 +597,20 @@ impl Simcraft {
         }
 
         false
+    }
+
+    fn set_progressbar_inc(
+        &self,
+        progress_bar: &mut ProgressBar,
+        slot: ESlot,
+        iteration_count: usize,
+        offset: u64
+    ) {
+        let mut iterations = self._calculate_iterations_at(slot, iteration_count);
+        iterations = match iterations < offset {
+            true => 0,
+            false => iterations - offset
+        };
+        progress_bar.inc(iterations);
     }
 }
