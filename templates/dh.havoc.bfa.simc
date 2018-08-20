@@ -9,7 +9,7 @@ region=eu
 server=alleria
 role=attack
 professions=herbalism=100/mining=96
-talents=3213213
+talents=#[[var=talents]]
 spec=havoc
 
 
