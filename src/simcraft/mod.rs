@@ -360,6 +360,14 @@ impl Simcraft {
                 entry.push_str(&format!(",enchant_id={}", item.enchant_id));
             }
 
+            if item.azerite_level != 0 {
+                entry.push_str(&format!(",azerite_level={}", item.azerite_level));
+            }
+
+            if !item.azerite_power.is_empty() {
+                entry.push_str(&format!(",azerite_power={}", item.azerite_power));
+            }
+
             item_list.push_str(&entry);
             item_list.push('\n');
         }
@@ -455,7 +463,7 @@ impl Simcraft {
 
                     let regex_item = Regex::new("(head|neck|shoulder|back|chest|wrist|waist|hands|legs|feet|finger1|finger2|trinket1|trinket2|main_hand|off_hand)=([a-zA-Z0-9]*),(.*)")
                         .unwrap();
-                    let regex_ids = Regex::new("(id|gem_id|bonus_id|relic_id|enchant_id)=([\\d/:]+)")
+                    let regex_ids = Regex::new("(id|gem_id|bonus_id|relic_id|enchant_id|azerite_power|azerite_level)=([\\d/:]+)")
                         .unwrap();
 
                     // find something
@@ -490,6 +498,8 @@ impl Simcraft {
                                 "bonus_id" => item.bonus_id = String::from(&cap_ids[2]),
                                 "relic_id" => item.relic_id = String::from(&cap_ids[2]),
                                 "enchant_id" => item.enchant_id = String::from(&cap_ids[2]).parse::<u32>().unwrap(),
+                                "azerite_power" => item.azerite_power = String::from(&cap_ids[2]),
+                                "azerite_level" => item.azerite_level = String::from(&cap_ids[2]).parse::<u32>().unwrap(),
                                 _ => ()
                             }
                         }

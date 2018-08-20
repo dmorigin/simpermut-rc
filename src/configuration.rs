@@ -20,6 +20,8 @@ pub struct ReplacedItem {
     pub gem_id: String,
     pub relic_id: String,
     pub enchant_id: u32,
+    pub azerite_power: String,
+    pub azerite_level: u32
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]

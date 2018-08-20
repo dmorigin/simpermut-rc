@@ -24,22 +24,15 @@
     "replaces": {
         "items": [
             {
-                "slot": "main_hand",
-                "id": 127829,
-                "name": "",
-                "gem_id": "137491/142192/152032",
-                "bonus_id": "719",
-                "relic_id": "3536:1597:3336/3536:1592:3337/3611:1487:3528",
-                "enchant_id": 0
-            },
-            {
-                "slot": "off_hand",
-                "id": 127830,
+                "slot": "neck",
+                "id": 158075,
                 "name": "",
                 "gem_id": "",
-                "bonus_id": "",
+                "bonus_id": "4932/4933/4936/1500",
                 "relic_id": "",
-                "enchant_id": 0
+                "enchant_id": 0,
+                "azerite_power": "",
+                "azerite_level": 15
             }
         ],
 
@@ -47,14 +40,6 @@
             {
                 "slot": "finger",
                 "id": 5427
-            },
-            {
-                "slot": "back",
-                "id": 5435
-            },
-            {
-                "slot": "neck",
-                "id": 5437
             }
         ]
     },

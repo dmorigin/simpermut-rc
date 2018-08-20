@@ -14,6 +14,8 @@ pub struct Item
     pub gem_id: String,
     pub relic_id: String,
     pub enchant_id: u32,
+    pub azerite_power: String,
+    pub azerite_level: u32
 }
 
 impl Item {
@@ -25,7 +27,9 @@ impl Item {
             bonus_id: String::new(),
             gem_id: String::new(),
             relic_id: String::new(),
-            enchant_id: 0
+            enchant_id: 0,
+            azerite_power: String::new(),
+            azerite_level: 0
         }
     }
 
@@ -37,7 +41,9 @@ impl Item {
             bonus_id: other.bonus_id.clone(),
             gem_id: other.gem_id.clone(),
             relic_id: other.relic_id.clone(),
-            enchant_id: other.enchant_id
+            enchant_id: other.enchant_id,
+            azerite_power: other.azerite_power.clone(),
+            azerite_level: other.azerite_level
         }
     }
 }
