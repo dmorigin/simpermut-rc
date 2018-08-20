@@ -52,20 +52,25 @@ fn main() {
         .arg(Arg::with_name("version")
             .long("version")
             .help("Print the version of this application."))
+        .arg(Arg::with_name("talents")
+            .short("t")
+            .long("talents")
+            .takes_value(true)
+            .help("Override the talent setting from input file."))
         .get_matches();
     
 
     // read config file
     let config_file = arg_matches.value_of("config").unwrap_or(CONFIG_FILE);
     let config = configuration::Configuration::load(config_file).unwrap();
-
+    let talents = arg_matches.value_of("talents").unwrap_or("");
 
     // Map for all items
     let item_list_file = arg_matches.value_of("INPUT").unwrap();
     println!("Read data from input file: {}", item_list_file);
 
     // handle simc
-    let mut simc = simcraft::Simcraft::new(&config);
+    let mut simc = simcraft::Simcraft::new(&config, talents);
     simc.compute_item_list(item_list_file).unwrap();
     
     // calculate the number of iterations

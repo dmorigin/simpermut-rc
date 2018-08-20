@@ -41,7 +41,7 @@ pub struct Simcraft {
 }
 
 impl Simcraft {
-    pub fn new(config: &Configuration) -> Simcraft {
+    pub fn new(config: &Configuration, talents: &str) -> Simcraft {
         // setup directories
         let output_dir = format!("{}/{}", config.output_dir, Uuid::new_v4().to_string());
         let report_dir = format!("{}/{}", output_dir, config.report_dir);
@@ -70,7 +70,7 @@ impl Simcraft {
             report: Generator::new(config, &report_dir),
             statistic: Statistic::new(config),
             spec: String::new(),
-            talents: String::new()
+            talents: String::from(talents)
         }
     }
 
@@ -456,9 +456,11 @@ impl Simcraft {
                     }
 
                     // read talents from simc
-                    let regex_talents = Regex::new("^talents=(.*)$").unwrap();
-                    if let Some(talents) = regex_talents.captures(&line) {
-                        self.talents = String::from(&talents[1]);
+                    if self.talents.is_empty() {
+                        let regex_talents = Regex::new("^talents=(.*)$").unwrap();
+                        if let Some(talents) = regex_talents.captures(&line) {
+                            self.talents = String::from(&talents[1]);
+                        }
                     }
 
                     let regex_item = Regex::new("(head|neck|shoulder|back|chest|wrist|waist|hands|legs|feet|finger1|finger2|trinket1|trinket2|main_hand|off_hand)=([a-zA-Z0-9]*),(.*)")
