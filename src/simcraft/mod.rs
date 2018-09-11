@@ -37,7 +37,8 @@ pub struct Simcraft {
     report: Generator,
     statistic: Statistic,
     spec: String,
-    talents: String
+    talents: String,
+    level: u32
 }
 
 impl Simcraft {
@@ -70,7 +71,8 @@ impl Simcraft {
             report: Generator::new(config, &report_dir),
             statistic: Statistic::new(config),
             spec: String::new(),
-            talents: String::from(talents)
+            talents: String::from(talents),
+            level: 120
         }
     }
 
@@ -393,6 +395,10 @@ impl Simcraft {
             self.template.set_var("talents", &self.talents).unwrap();
         }
 
+        if self.template.var_exist("level") && self.config.simcraft.override_spec {
+            self.template.set_var("level", &self.level.to_string()).unwrap();
+        }
+
         // compile template
         let process_tpl = format!("{}/{}", &self.compile_dir,
             self.config.simcraft.process_template.replace("{}", &parse_counter.to_string()));
@@ -461,6 +467,12 @@ impl Simcraft {
                         if let Some(talents) = regex_talents.captures(&line) {
                             self.talents = String::from(&talents[1]);
                         }
+                    }
+
+                    // read level from simc
+                    let regex_level = Regex::new("^level=(.*)$").unwrap();
+                    if let Some(level) = regex_level.captures(&line) {
+                        self.level = String::from(&level[1]).parse::<u32>().unwrap();
                     }
 
                     let regex_item = Regex::new("(head|neck|shoulder|back|chest|wrist|waist|hands|legs|feet|finger1|finger2|trinket1|trinket2|main_hand|off_hand)=([a-zA-Z0-9]*),(.*)")

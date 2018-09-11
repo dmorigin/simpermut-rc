@@ -23,7 +23,7 @@ mod configuration;
 use configuration::*;
 
 
-const VERSION: &str = "0.2.0";
+const VERSION: &str = "0.2.1";
 const AUTHOR: &str = "[DM]Origin";
 
 // This is the time in seconds in which one iteration
@@ -57,6 +57,9 @@ fn main() {
             .long("talents")
             .takes_value(true)
             .help("Override the talent setting from input file."))
+        .arg(Arg::with_name("yes")
+            .short("y")
+            .help("Accept automaticaly the amount of iterations."))
         .get_matches();
     
 
@@ -64,6 +67,7 @@ fn main() {
     let config_file = arg_matches.value_of("config").unwrap_or(CONFIG_FILE);
     let config = configuration::Configuration::load(config_file).unwrap();
     let talents = arg_matches.value_of("talents").unwrap_or("");
+    let accept = arg_matches.is_present("yes");
 
     // Map for all items
     let item_list_file = arg_matches.value_of("INPUT").unwrap();
@@ -80,18 +84,22 @@ fn main() {
     println!("This runs for approximalty: {}", fmt_duration(iterations.1 * TIME_PER_ITER));
     println!("Do you want to continue? (y == yes / n == no)");
 
-    loop {
-        let mut accept: String = String::new();
-        std::io::stdin().read_line(&mut accept)
-            .expect("Failed to read user input");
-        
-        match &accept.trim()[..] {
-            "y" => { break; },
-            "Y" => { break; },
-            "n" => { return; },
-            "N" => { return; }
-            _ => ()
+    if accept == false {
+        loop {
+            let mut accept: String = String::new();
+            std::io::stdin().read_line(&mut accept)
+                .expect("Failed to read user input");
+            
+            match &accept.trim()[..] {
+                "y" => { break; },
+                "Y" => { break; },
+                "n" => { return; },
+                "N" => { return; }
+                _ => ()
+            }
         }
+    } else {
+        println!("Automaticaly accept the iterations.");
     }
 
     // start permutation

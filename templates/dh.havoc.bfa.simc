@@ -3,7 +3,7 @@
 
 # Character
 demonhunter="Havoc"
-level=110
+level=#[[var=level]]
 race=blood_elf
 region=eu
 server=alleria
