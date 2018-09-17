@@ -13,7 +13,8 @@
         "html": "html/simc_report_{}.html",
         "json": "json/simc_report_{}.json",
         "override_spec": true,
-        "override_talents": true
+        "override_talents": true,
+        "replace_weaponhand_enum": true
     },
 
     "statistic": {

@@ -95,7 +95,7 @@ impl Simcraft {
 
         // step through all items
         while let Some(s) = Simcraft::next_slot(slot) {
-            if s == ESlot::Trinket || s == ESlot::Finger {
+            if s == ESlot::Trinket || s == ESlot::Finger || s == ESlot::WeaponHand {
                 iterations *= match self.items.get_slot(s) {
                     Some(l) => ((l.len() * l.len()) - l.len()) / 2,
                     None => 1
@@ -344,7 +344,7 @@ impl Simcraft {
         // build the item list
         let mut item_list: String = String::new();
         for item in stack.iter() {
-            let mut entry: String = format!("{}=,id={}", &item.slot.name, item.id);
+            let mut entry: String = format!("{}=,id={}", &item.slot.get_name(), item.id);
 
             if !item.gem_id.is_empty() {
                 entry.push_str(&format!(",gem_id={}", item.gem_id));
@@ -358,7 +358,10 @@ impl Simcraft {
                 entry.push_str(&format!(",bonus_id={}", item.bonus_id));
             }
 
-            if item.enchant_id != 0 {
+            // has replaced enchantment
+            if let Some(enchant) = self.get_replaced_enchantment(&item.slot) {
+                entry.push_str(&format!(",enchant_id={}", enchant.id));
+            } else if item.enchant_id != 0 {
                 entry.push_str(&format!(",enchant_id={}", item.enchant_id));
             }
 
@@ -484,7 +487,14 @@ impl Simcraft {
                     for cap_item in regex_item.captures_iter(&line) {
                         // save slot
                         let slot = match Slot::from_str(&cap_item[1]) {
-                            Ok(slot) => slot,
+                            Ok(slot) => {
+                                if self.config.simcraft.replace_weaponhand_enum &&
+                                (slot.slot == ESlot::MainHand || slot.slot == ESlot::OffHand) {
+                                    Slot::from_enum(ESlot::WeaponHand)
+                                } else {
+                                    slot
+                                }
+                            },
                             Err(_) => continue
                         };
 
@@ -496,14 +506,16 @@ impl Simcraft {
                         let mut item: Item = Item::new();
 
                         // has replaced enchantment
-                        if let Some(enchant) = self.get_replaced_enchantment(&slot) {
+/*                        if let Some(enchant) = self.get_replaced_enchantment(&slot) {
                             item.enchant_id = enchant.id;
                         }
-
+*/
                         // save name
                         item.name = String::from(&cap_item[2]);
-                        item.slot = slot.clone();
 
+                        // save slot
+                        item.slot = slot.clone();
+                        
                         // extract id's
                         for cap_ids in regex_ids.captures_iter(&cap_item[3]) {
                             match &cap_ids[1] {
@@ -539,6 +551,7 @@ impl Simcraft {
             let tuple = match next {
                 ESlot::Finger => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
                 ESlot::Trinket => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
+                ESlot::WeaponHand => self.permut_iteration_double(progress_bar, stack, next, parse_counter),
                 _ => self.permut_iteration_single(progress_bar, stack, next, parse_counter)
             };
 
@@ -594,6 +607,7 @@ impl Simcraft {
             ESlot::Finger => Some(ESlot::Trinket),
             ESlot::Trinket => Some(ESlot::MainHand),
             ESlot::MainHand => Some(ESlot::OffHand),
+            ESlot::OffHand => Some(ESlot::WeaponHand),
             _ => None
         }
     }

@@ -59,17 +59,7 @@ impl Template {
             Err(err) => Err(err)
         }
     }
-/*
-    pub fn list_vars(&self) -> Result<Vec<String>, Error> {
-        let mut keys: Vec<String> = Vec::new();
 
-        for (key, _value) in self.variables.borrow_mut().iter() {
-            keys.push(key.clone());
-        }
-
-        Ok(keys)
-    }
-*/
     pub fn var_exist(&self, var: &str) -> bool {
         for (key, _value) in self.variables.borrow_mut().iter() {
             if key == var {

@@ -45,7 +45,8 @@ pub struct Simcraft {
     pub html: String,
     pub json: String,
     pub override_spec: bool,
-    pub override_talents: bool
+    pub override_talents: bool,
+    pub replace_weaponhand_enum: bool
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

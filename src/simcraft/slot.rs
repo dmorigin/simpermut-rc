@@ -26,7 +26,10 @@ pub enum ESlot
     Trinket1,
     Trinket2,
     MainHand,
-    OffHand
+    OffHand,
+    WeaponHand,
+    WeaponHand1,
+    WeaponHand2
 }
 
 
@@ -65,6 +68,13 @@ impl Slot {
         }
     }
 
+    pub fn from_enum(slot: ESlot) -> Slot {
+        Slot {
+            slot: slot,
+            name: Slot::_get_name(slot)
+        }
+    }
+
     pub fn from_str(name: &str) -> Result<Slot, Error> {
         let eslot: ESlot = match Slot::_get_eslot(name) {
             Ok(s) => Slot::fix_slot(s),
@@ -85,6 +95,8 @@ impl Slot {
             ESlot::Finger2 => ESlot::Finger,
             ESlot::Trinket1 => ESlot::Trinket,
             ESlot::Trinket2 => ESlot::Trinket,
+            ESlot::WeaponHand1 => ESlot::WeaponHand,
+            ESlot::WeaponHand2 => ESlot::WeaponHand,
             _ => eslot
         }
     }
@@ -105,6 +117,13 @@ impl Slot {
                     _ => { return Err(Error::new(ErrorKind::InvalidInput, "Value of part is wrong")); }
                 }
             },
+            ESlot::WeaponHand => {
+                match part {
+                    1 => ESlot::WeaponHand1,
+                    2 => ESlot::WeaponHand2,
+                    _ => { return Err(Error::new(ErrorKind::InvalidInput, "Value of part is wrong")); }
+                }
+            }
             _ => slot.slot
         };
 
@@ -112,6 +131,14 @@ impl Slot {
             slot: eslot,
             name: Slot::_get_name(eslot)
         })
+    }
+
+    pub fn get_name(&self) -> String {
+        match self.slot {
+            ESlot::WeaponHand1 => String::from("main_hand"),
+            ESlot::WeaponHand2 => String::from("off_hand"),
+            _ => self.name.clone()
+        }
     }
 
     fn _get_eslot(name: &str) -> Result<ESlot, Error> {
@@ -134,6 +161,9 @@ impl Slot {
             "trinket2" => Ok(ESlot::Trinket2),
             "main_hand" => Ok(ESlot::MainHand),
             "off_hand" => Ok(ESlot::OffHand),
+            "weaponhand" => Ok(ESlot::WeaponHand),
+            "weaponhand1" => Ok(ESlot::WeaponHand1),
+            "weaponhand2" => Ok(ESlot::WeaponHand2),
             _ => Err(Error::new(ErrorKind::InvalidInput, String::from("Invalid slot name")))
         }
     }
@@ -158,6 +188,9 @@ impl Slot {
             ESlot::Trinket2 => String::from("trinket2"),
             ESlot::MainHand => String::from("main_hand"),
             ESlot::OffHand => String::from("off_hand"),
+            ESlot::WeaponHand => String::from("weaponhand"),
+            ESlot::WeaponHand1 => String::from("weaponhand1"),
+            ESlot::WeaponHand2 => String::from("weaponhand2"),
             _ => String::new()
         }
     }

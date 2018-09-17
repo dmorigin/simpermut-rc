@@ -1,6 +1,6 @@
 [package]
 name = "sim_permut"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["dmorigin <stephan@kirfel-koeln.de>"]
 
 [dependencies]
