@@ -76,5 +76,5 @@ Skalierungsfaktoren aus zu rechnen. Setzt also unbedingt: calculate_scale_factor
 
 ## Pre Compiled
 
-Windows x64 Version 0.1.4
-https://www.gamers-shell.de/wp-content/uploads/2018/08/sim_permut_0.2.0_win64.zip
+Windows x64 Version 0.2.2
+https://www.gamers-shell.de/wp-content/uploads/2018/08/sim_permut_0.2.2_win64.zip
