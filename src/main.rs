@@ -10,6 +10,7 @@ extern crate clap;
 extern crate chrono;
 extern crate uuid;
 extern crate indicatif;
+extern crate rand;
 
 use clap::{Arg, App};
 use chrono::Duration;
@@ -23,7 +24,7 @@ mod configuration;
 use configuration::*;
 
 
-const VERSION: &str = "0.2.2";
+const VERSION: &str = "0.3.0";
 const AUTHOR: &str = "[DM]Origin";
 
 // This is the time in seconds in which one iteration
