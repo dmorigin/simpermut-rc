@@ -38,7 +38,7 @@ pub struct Simcraft {
     report: Generator,
     spec: String,
     talents: String,
-    level: u32
+    level: u32,
 }
 
 impl Simcraft {
@@ -80,7 +80,7 @@ impl Simcraft {
     // .1 => approximate value
     pub fn calculate_iterations(&self) -> (u64, u64) {
         let iterations = self._calculate_iterations_at(ESlot::Head, 0) as f64;
-        let approximate = 30f32 / self.config.statistic.tolerance; // need to be fixed!
+        let approximate = ((self.items.len() * self.items.total_items()) as f64 / iterations) * iterations;
 
         (iterations as u64, approximate as u64)
     }
@@ -119,6 +119,7 @@ impl Simcraft {
             Ok(file) => {
                 self.parse_simc_file(&file);
                 println!("Number of keys: {}", self.items.len());
+                println!("Found number of Items: {}", self.items.total_items());
                 Ok(true)
             }
             Err(err) => {
@@ -180,14 +181,15 @@ impl Simcraft {
         // start permutation with random access
         let mut rng = thread_rng();
         let mut parse_counter = 0u64;
-        let statistic = Statistic::new(&self.config, iterations.0);
+        let statistic = Statistic::new(&self.config, iterations.0, self.items.total_items());
 
         while permutation.len() > 0 {
             let index = rng.gen_range(0, permutation.len());
             
-            // if no ignores in that stack, then we can give it a try
+            // if no ignores in these set, then we can process the simc file
             if !statistic.has_ignores(&permutation[index]) {
                 // calculate dps and so on
+                // tuple(parse_count, dps, min_dps, max_dps)
                 let tuple = self.process_simc_file(&permutation[index], parse_counter);
                 parse_counter = tuple.0;
 
@@ -558,7 +560,7 @@ impl Simcraft {
 
     fn get_replaced_enchantment(&self, slot: &Slot) -> Option<ReplacedEnchantment> {
         for i in &self.config.replaces.enchantments {
-            if i.slot == slot.name {
+            if i.slot == Slot::from_enum(Slot::fix_slot(slot.slot)).name {
                 return Some(i.clone());
             }
         }
@@ -609,20 +611,5 @@ impl Simcraft {
         }
 
         false
-    }
-
-    fn set_progressbar_inc(
-        &self,
-        progress_bar: &mut ProgressBar,
-        slot: ESlot,
-        iteration_count: usize,
-        offset: u64
-    ) {
-        let mut iterations = self._calculate_iterations_at(slot, iteration_count);
-        iterations = match iterations < offset {
-            true => 0,
-            false => iterations - offset
-        };
-        progress_bar.inc(iterations);
     }
 }

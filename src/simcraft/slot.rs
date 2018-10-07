@@ -168,7 +168,7 @@ impl Slot {
         }
     }
 
-    pub fn _get_name(slot: ESlot) -> String {
+    fn _get_name(slot: ESlot) -> String {
         match slot {
             ESlot::Head => String::from("head"),
             ESlot::Neck => String::from("neck"),

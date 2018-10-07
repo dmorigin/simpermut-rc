@@ -75,4 +75,14 @@ impl ItemMap {
     pub fn len(&self) -> usize {
         self.list.len()
     }
+
+    pub fn total_items(&self) -> usize {
+        let mut count = 0usize;
+
+        for i in self.list.iter() {
+            count += i.items.len();
+        }
+
+        count
+    }
 }

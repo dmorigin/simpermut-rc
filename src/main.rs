@@ -31,7 +31,7 @@ const AUTHOR: &str = "[DM]Origin";
 // runs. On faster machines its about 12s to 15s. But on
 // slower one it could be of around 25s.
 // So I set this to 19s. I hope this is a god value :)
-const TIME_PER_ITER: u64 = 19;
+const TIME_PER_ITER: u64 = 15;
 
 
 fn main() {
