@@ -56,7 +56,7 @@ impl Statistic {
         };
 
         obj.modifier = ((iterations as f64).sqrt() / (total_items as f64 / 16.0)) as f32;
-        println!("Using modifier: {}", obj.modifier);
+        //println!("Using modifier: {}", obj.modifier);
 
         obj
     }
@@ -121,8 +121,8 @@ impl Statistic {
 
         // rate item
         data.rating = ((data.dps_avg - min) / (max_dps - min) * 100.0) as i32;
-        println!("Rating: Item({}) -> Rating({}) / DPS({} / {}) Avg DPS({}) | Min({}), Seen({}), Tol({})", 
-            data.item_id, data.rating, min_dps, max_dps, data.dps_avg, min, data.seen, tolerance);
+        //println!("Rating: Item({}) -> Rating({}) / DPS({} / {}) Avg DPS({}) | Min({}), Seen({}), Tol({})", 
+        //    data.item_id, data.rating, min_dps, max_dps, data.dps_avg, min, data.seen, tolerance);
     }
 
 /*
