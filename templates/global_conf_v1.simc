@@ -12,7 +12,7 @@ threads=5
 # General
 max_time=300
 vary_combat_length=0.2
-iterations=10000
+iterations=15000
 
 # Enemies (Patchwerk,LightMovement,HecticAddCleave)
 tmi_boss=T19M
@@ -68,7 +68,7 @@ scale_only=agility,haste,crit_rating,mastery,versatility,weapon_dps,weapon_offha
 #
 # Weapons
 #
-# versatile_navigation			// Versatile Proc
-# quick_navigation				// Haste Proc
-# galeforce_striking			// +15% Attack Speed Proc
-#
+# id=5962	versatile_navigation		// Versatile Proc
+# id=5963	quick_navigation			// Haste Proc
+# id=5950	galeforce_striking			// +15% Attack Speed Proc
+# 

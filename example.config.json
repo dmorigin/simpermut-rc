@@ -18,8 +18,8 @@
     },
 
     "statistic": {
-        "tolerance": 2.0,
-        "threshold": 15
+        "tolerance": 0.0,
+        "threshold": 0
     },
 
     "replaces": {

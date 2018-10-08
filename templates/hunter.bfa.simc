@@ -1,7 +1,8 @@
 # Configuration
 #[[import=templates/global_conf_v1.simc]]
 
-hunter="Kougami"
+# Character
+hunter="Hunter.BfA"
 level=#[[var=level]]
 race=blood_elf
 region=eu
@@ -14,3 +15,11 @@ spec=#[[var=spec]]
 
 # Item List
 #[[var=item_list]]
+
+
+# ***********************************************************
+# 
+# Azerite Bonus - Hunter
+#
+# ***********************************************************
+#
