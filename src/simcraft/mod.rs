@@ -266,7 +266,13 @@ impl Simcraft {
         let mut counter = 0;
 
         // slot finger1
-        let slot1_items = self.items.get_slot(slot).unwrap();
+        let slot1_items = match self.items.get_slot(slot) {
+            Some(i) => i,
+            None => {
+                return self.handle_iteration_step(progress_bar, slot, stack, iterations);
+            }
+        };
+
         for slot1 in slot1_items.iter() {
             // check limits
             if self.has_multiple_of_them(&stack) {
