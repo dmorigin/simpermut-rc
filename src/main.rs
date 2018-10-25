@@ -24,7 +24,7 @@ mod configuration;
 use configuration::*;
 
 
-const VERSION: &str = "0.3.0";
+const VERSION: &str = "0.3.1";
 const AUTHOR: &str = "[DM]Origin";
 
 // This is the time in seconds in which one iteration
